@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Library, 
@@ -13,8 +13,11 @@ import {
   LogOut,
   Sparkles
 } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../firebase';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
   const navItems = [
     { name: 'Dashboard', icon: LayoutDashboard, path: '/dashboard' },
     { name: 'Library', icon: Library, path: '/library' },
@@ -27,6 +30,15 @@ const Sidebar = () => {
     { name: 'Career Roadmap', icon: GraduationCap, path: '/roadmap' },
     { name: 'Complaints', icon: AlertCircle, path: '/complaints' },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   return (
     <aside className="w-64 bg-white border-r border-gray-200 h-screen hidden md:flex flex-col sticky top-0 z-40">
@@ -60,7 +72,10 @@ const Sidebar = () => {
       </nav>
 
       <div className="p-4 border-t border-gray-100">
-        <button className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-danger-600 rounded-lg hover:bg-danger-50 transition-colors">
+        <button 
+          onClick={handleLogout}
+          className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-danger-600 rounded-lg hover:bg-danger-50 transition-colors"
+        >
           <LogOut className="w-5 h-5 mr-3 flex-shrink-0" />
           Logout
         </button>

@@ -1,30 +1,71 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
+import { Sparkles, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import Button from '../components/ui/Button';
 import InputField from '../components/ui/InputField';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [department, setDepartment] = useState('');
+  const [batchNumber, setBatchNumber] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const emailError = email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'Please enter a valid email address' : '';
+  const passwordError = password && (/[A-Z]/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) 
+    ? 'Password must be lowercase and contain at least one special character' : '';
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (emailError || passwordError) {
+      setError('Please fix the errors in the form before submitting.');
+      return;
+    }
+    
     setIsLoading(true);
     setError('');
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      if (isRegistering) {
+        try {
+          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+          // Save additional user data in Firestore (fire-and-forget to prevent hanging if Firestore isn't fully set up)
+          setDoc(doc(db, "users", user.uid), {
+            email,
+            department,
+            batchNumber,
+            createdAt: new Date().toISOString()
+          }).catch(dbErr => console.error("Firestore error:", dbErr));
+        } catch (authError) {
+          // If email is already in use, attempt to just sign them in so they aren't stuck
+          if (authError.code === 'auth/email-already-in-use') {
+            await signInWithEmailAndPassword(auth, email, password);
+          } else {
+            throw authError; // Rethrow to be caught by outer catch
+          }
+        }
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
       // Navigate to dashboard
       navigate('/dashboard');
     } catch (err) {
-      console.error(err);
-      setError('Invalid email or password. Please try again.');
+      console.error("Auth error:", err);
+      // Display the actual error message from Firebase so the user knows what went wrong
+      let errorMessage = 'Failed to create account. Please try again.';
+      if (err && err.message) {
+        // Clean up the firebase error prefix if it exists
+        errorMessage = err.message.replace('Firebase: ', '');
+      }
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -79,8 +120,12 @@ const LoginPage = () => {
           </div>
 
           <div className="mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-            <p className="text-gray-500">Sign in to access your student dashboard.</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              {isRegistering ? 'Activate Account' : 'Welcome Back'}
+            </h2>
+            <p className="text-gray-500">
+              {isRegistering ? 'Register as a new student.' : 'Sign in to access your student dashboard.'}
+            </p>
           </div>
 
           {error && (
@@ -89,7 +134,7 @@ const LoginPage = () => {
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <InputField
               label="Email or Roll Number"
               id="email"
@@ -97,38 +142,78 @@ const LoginPage = () => {
               placeholder="student@college.edu"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              error={emailError}
               required
             />
             
-            <div className="space-y-1">
+            <div className="space-y-1 relative">
               <InputField
                 label="Password"
                 id="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                error={passwordError}
                 required
               />
-              <div className="flex justify-between items-center pt-2">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input type="checkbox" className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4" />
-                  <span className="text-sm text-gray-600 select-none">Remember me</span>
-                </label>
-                <a href="#" className="text-sm font-medium text-primary-600 hover:text-primary-700">
-                  Forgot password?
-                </a>
-              </div>
+              <button
+                type="button"
+                className={`absolute right-3 text-gray-400 hover:text-gray-600 focus:outline-none ${passwordError ? 'top-9' : 'top-9'}`}
+                style={{ top: '36px' }}
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+              
+              {!isRegistering && (
+                <div className="flex justify-between items-center pt-2">
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4" />
+                    <span className="text-sm text-gray-600 select-none">Remember me</span>
+                  </label>
+                  <a href="#" className="text-sm font-medium text-primary-600 hover:text-primary-700">
+                    Forgot password?
+                  </a>
+                </div>
+              )}
             </div>
 
+            {isRegistering && (
+              <>
+                <InputField
+                  label="Department"
+                  id="department"
+                  type="text"
+                  placeholder="e.g. Computer Science"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  required
+                />
+                <InputField
+                  label="Batch Number"
+                  id="batchNumber"
+                  type="text"
+                  placeholder="e.g. 278117"
+                  value={batchNumber}
+                  onChange={(e) => setBatchNumber(e.target.value)}
+                  required
+                />
+              </>
+            )}
+
             <Button type="submit" className="w-full py-3" size="large" isLoading={isLoading}>
-              Sign In
+              {isRegistering ? 'Activate' : 'Sign In'}
             </Button>
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500">
-              New student? <a href="#" className="font-medium text-primary-600 hover:text-primary-700">Activate your account</a>
+              {isRegistering ? (
+                <>Already have an account? <button onClick={() => setIsRegistering(false)} className="font-medium text-primary-600 hover:text-primary-700">Sign In</button></>
+              ) : (
+                <>New student? <button onClick={() => setIsRegistering(true)} className="font-medium text-primary-600 hover:text-primary-700">Activate your account</button></>
+              )}
             </p>
           </div>
           
