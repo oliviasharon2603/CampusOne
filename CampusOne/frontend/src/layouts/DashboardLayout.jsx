@@ -1,11 +1,13 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/dashboard/Sidebar';
 import TopNav from '../components/dashboard/TopNav';
+import Chatbot from '../components/dashboard/Chatbot';
 import { useState } from 'react';
 import { Bot } from 'lucide-react';
 
 const DashboardLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
@@ -23,8 +25,14 @@ const DashboardLayout = () => {
         </main>
       </div>
 
+      {/* Chatbot Window */}
+      <Chatbot isOpen={isChatbotOpen} onClose={() => setIsChatbotOpen(false)} />
+
       {/* Floating AI Assistant Button (Global) */}
-      <button className="fixed bottom-6 right-6 w-14 h-14 bg-secondary-600 hover:bg-secondary-500 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center z-50">
+      <button 
+        onClick={() => setIsChatbotOpen(!isChatbotOpen)}
+        className="fixed bottom-6 right-6 w-14 h-14 bg-secondary-600 hover:bg-secondary-500 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center z-50"
+      >
         <Bot className="w-6 h-6" />
       </button>
 
