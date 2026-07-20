@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Calendar, MapPin, Users, Ticket, CheckCircle2, Clock, Sparkles, Filter, X } from 'lucide-react';
 import Button from '../components/ui/Button';
+import { useUserActivity } from '../context/UserActivityContext';
 
 // Mock Data
 const HERO_EVENT = {
@@ -15,27 +16,39 @@ const HERO_EVENT = {
 
 const CATEGORIES = ["All", "Technical", "Cultural", "Sports", "Academic", "Hackathons", "Placement"];
 
-const INITIAL_EVENTS = [
-  { id: 1, title: 'AI & Future of Work Workshop', category: 'Academic', date: 'Aug 20, 2026', time: '10:00 AM', venue: 'Lab 301', seats: 12, registered: false, type: 'upcoming', image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=600' },
-  { id: 2, title: 'Inter-College Basketball Final', category: 'Sports', date: 'Aug 22, 2026', time: '04:00 PM', venue: 'Sports Complex', seats: 150, registered: false, type: 'upcoming', image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=600' },
-  { id: 3, title: 'Google Cloud Campus Connect', category: 'Technical', date: 'Aug 15, 2026', time: '09:00 AM', venue: 'Seminar Hall', seats: 5, registered: true, type: 'current', image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600' },
-  { id: 4, title: 'TCS Placement Drive', category: 'Placement', date: 'Sep 05, 2026', time: '08:30 AM', venue: 'Placement Cell', seats: 200, registered: false, type: 'upcoming', image: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&q=80&w=600' },
-  { id: 5, title: 'Freshers Welcome Party', category: 'Cultural', date: 'Aug 10, 2026', time: '06:00 PM', venue: 'Open Air Theatre', seats: 0, registered: false, type: 'completed', image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=600' },
-  { id: 6, title: 'Web3 Builders Hackathon', category: 'Hackathons', date: 'Sep 12, 2026', time: '10:00 AM', venue: 'Innovation Lab', seats: 45, registered: false, type: 'upcoming', image: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=600' }
-];
-
 const EventsPage = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [activeCategory, setActiveCategory] = useState('All');
-  const [events, setEvents] = useState(INITIAL_EVENTS);
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [heroRegistered, setHeroRegistered] = useState(false);
   
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [toast, setToast] = useState(null);
   
+  const { registerEvent } = useUserActivity();
+  
   // Countdown Timer Logic
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  // Fetch events from real backend
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/v1/events');
+        const result = await response.json();
+        if (result.success) {
+          setEvents(result.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch events:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -64,15 +77,33 @@ const EventsPage = () => {
 
   const handleHeroRegister = () => {
     setHeroRegistered(true);
+    registerEvent(HERO_EVENT.id);
     showToast(`You have successfully registered for ${HERO_EVENT.title}!`);
   };
 
-  const confirmRegistration = () => {
-    setEvents(prev => 
-      prev.map(e => e.id === selectedEvent.id ? { ...e, registered: true, seats: e.seats > 0 ? e.seats - 1 : 0 } : e)
-    );
+  const confirmRegistration = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/v1/events/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId: selectedEvent.id })
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        setEvents(prev => 
+          prev.map(e => e.id === selectedEvent.id ? { ...e, registered: true, seats: e.seats > 0 ? e.seats - 1 : 0 } : e)
+        );
+        registerEvent(selectedEvent.id);
+        showToast(`Successfully registered for ${selectedEvent.title}. Check your notifications for the ticket.`);
+      } else {
+        showToast(result.message || 'Failed to register for the event.');
+      }
+    } catch (error) {
+      showToast('Network error while processing registration.');
+    }
+    
     setShowConfirmModal(false);
-    showToast(`Successfully registered for ${selectedEvent.title}. Check your notifications for the ticket.`);
     setSelectedEvent(null);
   };
 

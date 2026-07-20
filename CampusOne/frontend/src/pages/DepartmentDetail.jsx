@@ -9,6 +9,7 @@ const DepartmentDetail = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('notices');
   const [selectedNotice, setSelectedNotice] = useState(null);
+  const [selectedLab, setSelectedLab] = useState(null);
 
   // Validate department
   const deptData = DEPARTMENTS_DATA[deptId];
@@ -228,7 +229,10 @@ const DepartmentDetail = () => {
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-gray-900">{lab.name}</h3>
                   <p className="text-gray-600 mt-2 text-sm leading-relaxed">{lab.description}</p>
-                  <div className="mt-4 flex items-center text-sm font-medium text-primary-600 cursor-pointer hover:text-primary-700">
+                  <div 
+                    onClick={() => setSelectedLab(lab)}
+                    className="mt-4 flex items-center text-sm font-medium text-primary-600 cursor-pointer hover:text-primary-700"
+                  >
                     View Schedule <ExternalLink className="w-4 h-4 ml-1" />
                   </div>
                 </div>
@@ -265,6 +269,31 @@ const DepartmentDetail = () => {
             </div>
             <div className="p-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 rounded-b-xl">
               <Button variant="outline" onClick={() => setSelectedNotice(null)}>Close</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lab Schedule Modal */}
+      {selectedLab && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setSelectedLab(null)}></div>
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full relative z-10 animate-in zoom-in-95 duration-200">
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-xl">
+              <h2 className="text-lg font-bold text-gray-900">{selectedLab.name} - Weekly Schedule</h2>
+              <button onClick={() => setSelectedLab(null)} className="p-2 hover:bg-gray-200 rounded-full"><X className="w-5 h-5 text-gray-500" /></button>
+            </div>
+            <div className="p-6">
+              <div className="grid grid-cols-5 gap-2 text-center text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">
+                <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div>
+              </div>
+              <div className="grid grid-cols-5 gap-2 text-center h-48">
+                {Array.from({ length: 15 }).map((_, i) => (
+                  <div key={i} className={`rounded-lg p-2 border flex items-center justify-center text-[10px] sm:text-xs font-medium ${i % 4 === 0 ? 'bg-gray-50 text-gray-400 border-gray-100' : 'bg-primary-50 text-primary-700 border-primary-100'}`}>
+                    {i % 4 === 0 ? 'Maintenance' : `Batch ${String.fromCharCode(65 + (i % 3))} Practicals`}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

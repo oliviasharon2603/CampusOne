@@ -14,7 +14,9 @@ export const DEPARTMENTS_DATA = {
     faculty: [
       { id: 1, name: 'Dr. Alan Turing', role: 'Head of Department', specialization: 'Theory of Computation', email: 'hod.cse@campusone.edu', phone: 'Ext: 301', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' },
       { id: 2, name: 'Prof. Grace Hopper', role: 'Professor', specialization: 'Compiler Design', email: 'g.hopper@campusone.edu', phone: 'Ext: 302', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=200' }
-    ],
+    ,
+      { id: 101, name: 'Prof. Alice Smith', role: 'Assistant Professor', specialization: 'Core Systems', email: 'a.smith@campusone.edu', phone: 'Ext: 111', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200' },
+      { id: 102, name: 'Prof. Bob Johnson', role: 'Assistant Professor', specialization: 'Applied Research', email: 'b.johnson@campusone.edu', phone: 'Ext: 112', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' }],
     resources: [
       { id: 1, title: 'CSE Syllabus (2024-28)', type: 'PDF', size: '2.1 MB', content: 'Syllabus details for Computer Science Engineering...' },
       { id: 2, title: 'Previous Question Papers - OS', type: 'ZIP', size: '15.0 MB', content: 'Archive of previous year Operating System questions...' }
@@ -38,7 +40,9 @@ export const DEPARTMENTS_DATA = {
     faculty: [
       { id: 1, name: 'Dr. Sarah Chen', role: 'Head of Department', specialization: 'Machine Learning', email: 'hod.aids@campusone.edu', phone: 'Ext: 401', image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200' },
       { id: 2, name: 'Prof. James Wilson', role: 'Associate Professor', specialization: 'Data Mining', email: 'j.wilson@campusone.edu', phone: 'Ext: 405', image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200' }
-    ],
+    ,
+      { id: 101, name: 'Prof. Alice Smith', role: 'Assistant Professor', specialization: 'Core Systems', email: 'a.smith@campusone.edu', phone: 'Ext: 111', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200' },
+      { id: 102, name: 'Prof. Bob Johnson', role: 'Assistant Professor', specialization: 'Applied Research', email: 'b.johnson@campusone.edu', phone: 'Ext: 112', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' }],
     resources: [
       { id: 1, title: 'B.Tech AI&DS Syllabus (2024-28)', type: 'PDF', size: '2.4 MB', content: 'Syllabus details for Artificial Intelligence & Data Science...' },
       { id: 2, title: 'Third Year Time Table - Even Semester', type: 'PDF', size: '1.1 MB', content: 'Timetable details for Third Year AI&DS...' }
@@ -60,7 +64,9 @@ export const DEPARTMENTS_DATA = {
     ],
     faculty: [
       { id: 1, name: 'Dr. Robert AI', role: 'Head of Department', specialization: 'Deep Learning', email: 'hod.aiml@campusone.edu', phone: 'Ext: 420', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200' }
-    ],
+    ,
+      { id: 101, name: 'Prof. Alice Smith', role: 'Assistant Professor', specialization: 'Core Systems', email: 'a.smith@campusone.edu', phone: 'Ext: 111', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200' },
+      { id: 102, name: 'Prof. Bob Johnson', role: 'Assistant Professor', specialization: 'Applied Research', email: 'b.johnson@campusone.edu', phone: 'Ext: 112', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' }],
     resources: [
       { id: 1, title: 'AIML Core Subjects Handout', type: 'PDF', size: '1.5 MB', content: 'Handout details for AIML...' }
     ],
@@ -80,7 +86,9 @@ export const DEPARTMENTS_DATA = {
     ],
     faculty: [
       { id: 1, name: 'Dr. Jane Network', role: 'Head of Department', specialization: 'Cybersecurity', email: 'hod.it@campusone.edu', phone: 'Ext: 350', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200' }
-    ],
+    ,
+      { id: 101, name: 'Prof. Alice Smith', role: 'Assistant Professor', specialization: 'Core Systems', email: 'a.smith@campusone.edu', phone: 'Ext: 111', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200' },
+      { id: 102, name: 'Prof. Bob Johnson', role: 'Assistant Professor', specialization: 'Applied Research', email: 'b.johnson@campusone.edu', phone: 'Ext: 112', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' }],
     resources: [
       { id: 1, title: 'Web Development Guide', type: 'PDF', size: '3.0 MB', content: 'Comprehensive guide to MERN stack...' }
     ],
@@ -92,7 +100,7 @@ export const DEPARTMENTS_DATA = {
     id: "civil",
     name: "Civil Engineering",
     code: "CIVIL",
-    image: "https://images.unsplash.com/photo-1541888086425-d81bb19240f5?auto=format&fit=crop&q=80&w=1200",
+    image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80&w=1200",
     description: "Designing and building the sustainable infrastructure of tomorrow.",
     stats: [ { label: "Students", value: "200" }, { label: "Faculty", value: "16" }, { label: "Labs", value: "8" } ],
     notices: [
@@ -100,7 +108,9 @@ export const DEPARTMENTS_DATA = {
     ],
     faculty: [
       { id: 1, name: 'Dr. Build Master', role: 'Head of Department', specialization: 'Structural Engineering', email: 'hod.civil@campusone.edu', phone: 'Ext: 501', image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200' }
-    ],
+    ,
+      { id: 101, name: 'Prof. Alice Smith', role: 'Assistant Professor', specialization: 'Core Systems', email: 'a.smith@campusone.edu', phone: 'Ext: 111', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200' },
+      { id: 102, name: 'Prof. Bob Johnson', role: 'Assistant Professor', specialization: 'Applied Research', email: 'b.johnson@campusone.edu', phone: 'Ext: 112', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' }],
     resources: [
       { id: 1, title: 'AutoCAD Shortcuts Manual', type: 'PDF', size: '5.2 MB', content: 'List of all essential AutoCAD commands...' }
     ],
@@ -120,7 +130,9 @@ export const DEPARTMENTS_DATA = {
     ],
     faculty: [
       { id: 1, name: 'Dr. Gear Shaft', role: 'Head of Department', specialization: 'Thermodynamics', email: 'hod.mech@campusone.edu', phone: 'Ext: 601', image: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&q=80&w=200' }
-    ],
+    ,
+      { id: 101, name: 'Prof. Alice Smith', role: 'Assistant Professor', specialization: 'Core Systems', email: 'a.smith@campusone.edu', phone: 'Ext: 111', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200' },
+      { id: 102, name: 'Prof. Bob Johnson', role: 'Assistant Professor', specialization: 'Applied Research', email: 'b.johnson@campusone.edu', phone: 'Ext: 112', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' }],
     resources: [
       { id: 1, title: 'Thermodynamics Formula Sheet', type: 'PDF', size: '1.2 MB', content: 'Cheat sheet for all thermo formulas...' }
     ],
@@ -140,7 +152,9 @@ export const DEPARTMENTS_DATA = {
     ],
     faculty: [
       { id: 1, name: 'Dr. Sensor Logic', role: 'Head of Department', specialization: 'Process Control', email: 'hod.ice@campusone.edu', phone: 'Ext: 701', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200' }
-    ],
+    ,
+      { id: 101, name: 'Prof. Alice Smith', role: 'Assistant Professor', specialization: 'Core Systems', email: 'a.smith@campusone.edu', phone: 'Ext: 111', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200' },
+      { id: 102, name: 'Prof. Bob Johnson', role: 'Assistant Professor', specialization: 'Applied Research', email: 'b.johnson@campusone.edu', phone: 'Ext: 112', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' }],
     resources: [
       { id: 1, title: 'Sensors and Transducers Guide', type: 'PDF', size: '4.1 MB', content: 'A complete manual on industrial sensors...' }
     ],
@@ -160,7 +174,9 @@ export const DEPARTMENTS_DATA = {
     ],
     faculty: [
       { id: 1, name: 'Dr. Chip Maker', role: 'Head of Department', specialization: 'VLSI Design', email: 'hod.ece@campusone.edu', phone: 'Ext: 801', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=200' }
-    ],
+    ,
+      { id: 101, name: 'Prof. Alice Smith', role: 'Assistant Professor', specialization: 'Core Systems', email: 'a.smith@campusone.edu', phone: 'Ext: 111', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200' },
+      { id: 102, name: 'Prof. Bob Johnson', role: 'Assistant Professor', specialization: 'Applied Research', email: 'b.johnson@campusone.edu', phone: 'Ext: 112', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' }],
     resources: [
       { id: 1, title: 'Digital Signal Processing Notes', type: 'PDF', size: '6.5 MB', content: 'Notes covering Z-transforms and FFT...' }
     ],
@@ -180,7 +196,9 @@ export const DEPARTMENTS_DATA = {
     ],
     faculty: [
       { id: 1, name: 'Dr. Power Grid', role: 'Head of Department', specialization: 'Power Systems', email: 'hod.eee@campusone.edu', phone: 'Ext: 901', image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=200' }
-    ],
+    ,
+      { id: 101, name: 'Prof. Alice Smith', role: 'Assistant Professor', specialization: 'Core Systems', email: 'a.smith@campusone.edu', phone: 'Ext: 111', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=200' },
+      { id: 102, name: 'Prof. Bob Johnson', role: 'Assistant Professor', specialization: 'Applied Research', email: 'b.johnson@campusone.edu', phone: 'Ext: 112', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200' }],
     resources: [
       { id: 1, title: 'Power Electronics Lab Manual', type: 'PDF', size: '3.2 MB', content: 'Lab manual for inverters and converters...' }
     ],

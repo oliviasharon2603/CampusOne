@@ -1,71 +1,57 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '../firebase';
-import { Sparkles, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../firebase';
+import { Sparkles, ArrowRight } from 'lucide-react';
 import Button from '../components/ui/Button';
 import InputField from '../components/ui/InputField';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [department, setDepartment] = useState('');
-  const [batchNumber, setBatchNumber] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [batch, setBatch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
 
-  const emailError = email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'Please enter a valid email address' : '';
-  const passwordError = password && (/[A-Z]/.test(password) || !/[!@#$%^&*(),.?":{}|<>]/.test(password)) 
-    ? 'Password must be lowercase and contain at least one special character' : '';
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (emailError || passwordError) {
-      setError('Please fix the errors in the form before submitting.');
-      return;
-    }
-    
     setIsLoading(true);
     setError('');
 
     try {
-      if (isRegistering) {
-        try {
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-          const user = userCredential.user;
-          // Save additional user data in Firestore (fire-and-forget to prevent hanging if Firestore isn't fully set up)
-          setDoc(doc(db, "users", user.uid), {
-            email,
-            department,
-            batchNumber,
-            createdAt: new Date().toISOString()
-          }).catch(dbErr => console.error("Firestore error:", dbErr));
-        } catch (authError) {
-          // If email is already in use, attempt to just sign them in so they aren't stuck
-          if (authError.code === 'auth/email-already-in-use') {
-            await signInWithEmailAndPassword(auth, email, password);
-          } else {
-            throw authError; // Rethrow to be caught by outer catch
-          }
+      if (isSignUp) {
+        if (!name || !department || !batch) {
+          setError('Please fill in all fields.');
+          setIsLoading(false);
+          return;
         }
+        if (!/^\d{6}$/.test(batch)) {
+          setError('Batch number must be exactly 6 digits long.');
+          setIsLoading(false);
+          return;
+        }
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, {
+          displayName: name
+        });
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
       // Navigate to dashboard
       navigate('/dashboard');
     } catch (err) {
-      console.error("Auth error:", err);
-      // Display the actual error message from Firebase so the user knows what went wrong
-      let errorMessage = 'Failed to create account. Please try again.';
-      if (err && err.message) {
-        // Clean up the firebase error prefix if it exists
-        errorMessage = err.message.replace('Firebase: ', '');
+      console.error(err);
+      if (err.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please sign in instead.');
+      } else if (err.code === 'auth/weak-password') {
+        setError('Password should be at least 6 characters.');
+      } else {
+        setError('Invalid email or password. Please try again.');
       }
-      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -121,10 +107,10 @@ const LoginPage = () => {
 
           <div className="mb-10">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              {isRegistering ? 'Activate Account' : 'Welcome Back'}
+              {isSignUp ? 'Activate Your Account' : 'Welcome Back'}
             </h2>
             <p className="text-gray-500">
-              {isRegistering ? 'Register as a new student.' : 'Sign in to access your student dashboard.'}
+              {isSignUp ? 'Create a new student account to access the platform.' : 'Sign in to access your student dashboard.'}
             </p>
           </div>
 
@@ -134,86 +120,91 @@ const LoginPage = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-6">
+            {isSignUp && (
+              <>
+                <InputField
+                  label="Full Name"
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required={isSignUp}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <InputField
+                    label="Department"
+                    id="department"
+                    type="text"
+                    placeholder="e.g. CSE, AI&DS"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    required={isSignUp}
+                  />
+                  <InputField
+                    label="Batch Number"
+                    id="batch"
+                    type="text"
+                    placeholder="123456"
+                    value={batch}
+                    maxLength={6}
+                    onChange={(e) => setBatch(e.target.value.replace(/\D/g, ''))}
+                    required={isSignUp}
+                  />
+                </div>
+              </>
+            )}
+
             <InputField
-              label="Email or Roll Number"
+              label={isSignUp ? "Email Address" : "Email or Roll Number"}
               id="email"
               type="email"
               placeholder="student@college.edu"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              error={emailError}
               required
             />
             
-            <div className="space-y-1 relative">
+            <div className="space-y-1">
               <InputField
                 label="Password"
                 id="password"
-                type={showPassword ? "text" : "password"}
+                type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                error={passwordError}
                 required
               />
-              <button
-                type="button"
-                className={`absolute right-3 text-gray-400 hover:text-gray-600 focus:outline-none ${passwordError ? 'top-9' : 'top-9'}`}
-                style={{ top: '36px' }}
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-              
-              {!isRegistering && (
-                <div className="flex justify-between items-center pt-2">
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4" />
-                    <span className="text-sm text-gray-600 select-none">Remember me</span>
-                  </label>
-                  <a href="#" className="text-sm font-medium text-primary-600 hover:text-primary-700">
-                    Forgot password?
-                  </a>
-                </div>
-              )}
+              <div className="flex justify-between items-center pt-2">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input type="checkbox" className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 w-4 h-4" />
+                  <span className="text-sm text-gray-600 select-none">Remember me</span>
+                </label>
+                <a href="#" className="text-sm font-medium text-primary-600 hover:text-primary-700">
+                  Forgot password?
+                </a>
+              </div>
             </div>
 
-            {isRegistering && (
-              <>
-                <InputField
-                  label="Department"
-                  id="department"
-                  type="text"
-                  placeholder="e.g. Computer Science"
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                  required
-                />
-                <InputField
-                  label="Batch Number"
-                  id="batchNumber"
-                  type="text"
-                  placeholder="e.g. 278117"
-                  value={batchNumber}
-                  onChange={(e) => setBatchNumber(e.target.value)}
-                  required
-                />
-              </>
-            )}
-
             <Button type="submit" className="w-full py-3" size="large" isLoading={isLoading}>
-              {isRegistering ? 'Activate' : 'Sign In'}
+              {isSignUp ? 'Create Account' : 'Sign In'}
             </Button>
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-sm text-gray-500">
-              {isRegistering ? (
-                <>Already have an account? <button onClick={() => setIsRegistering(false)} className="font-medium text-primary-600 hover:text-primary-700">Sign In</button></>
-              ) : (
-                <>New student? <button onClick={() => setIsRegistering(true)} className="font-medium text-primary-600 hover:text-primary-700">Activate your account</button></>
-              )}
+              {isSignUp ? 'Already have an account? ' : 'New student? '}
+              <button 
+                type="button"
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setError('');
+                }} 
+                className="font-medium text-primary-600 hover:text-primary-700"
+              >
+                {isSignUp ? 'Sign in instead' : 'Activate your account'}
+              </button>
             </p>
           </div>
           

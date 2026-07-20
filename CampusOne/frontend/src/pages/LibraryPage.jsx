@@ -1,27 +1,51 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter, Book, BookOpen, Star, X, Info, CheckCircle2 } from 'lucide-react';
 import Button from '../components/ui/Button';
-
-// Mock Data
-const INITIAL_BOOKS = [
-  { id: 1, title: 'Introduction to Algorithms', author: 'Thomas H. Cormen', dept: 'CSE', available: true, rack: 'A-12', cover: 'bg-primary-100 text-primary-600' },
-  { id: 2, title: 'Deep Learning', author: 'Ian Goodfellow', dept: 'AI&DS', available: false, rack: 'B-04', cover: 'bg-secondary-100 text-secondary-600' },
-  { id: 3, title: 'Clean Code', author: 'Robert C. Martin', dept: 'CSE', available: true, rack: 'A-15', cover: 'bg-accent-100 text-accent-600' },
-  { id: 4, title: 'Design of Everyday Things', author: 'Don Norman', dept: 'IT', available: true, rack: 'C-01', cover: 'bg-gray-100 text-gray-600' },
-  { id: 5, title: 'Python Crash Course', author: 'Eric Matthes', dept: 'CSE', available: true, rack: 'A-02', cover: 'bg-primary-100 text-primary-600' },
-  { id: 6, title: 'Pattern Recognition and Machine Learning', author: 'Christopher M. Bishop', dept: 'AI&ML', available: true, rack: 'B-12', cover: 'bg-secondary-100 text-secondary-600' }
-];
+import { useUserActivity } from '../context/UserActivityContext';
 
 const RECOMMENDED = [
-  { id: 7, title: 'Artificial Intelligence: A Modern Approach', reason: 'Matches your interest in AI&DS', difficulty: 'Advanced', time: '14 hrs' }
+  { id: 7, title: 'Artificial Intelligence: A Modern Approach', reason: 'Matches your interest in AI&DS', difficulty: 'Advanced', time: '14 hrs', image: 'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&q=80&w=400' }
 ];
 
 const LibraryPage = () => {
   const [search, setSearch] = useState('');
-  const [books, setBooks] = useState(INITIAL_BOOKS);
+  const [books, setBooks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [toast, setToast] = useState(null);
+  
+  const { borrowBook } = useUserActivity();
+
+  // Fetch books from real backend
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/v1/library/books');
+        const result = await response.json();
+        if (result.success) {
+          // Map DB columns to frontend state format
+          const mappedBooks = result.data.map(b => ({
+            id: b.id,
+            title: b.title,
+            author: b.author,
+            dept: b.category, // using category as dept for UI
+            available: b.available > 0,
+            available_copies: b.available,
+            rack: 'A-12', // Mock rack
+            cover: 'bg-primary-100 text-primary-600',
+            image: b.cover
+          }));
+          setBooks(mappedBooks);
+        }
+      } catch (error) {
+        console.error('Failed to fetch books', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBooks();
+  }, []);
 
   // Filter books based on search input
   const filteredBooks = books.filter(book => 
@@ -40,19 +64,42 @@ const LibraryPage = () => {
     setTimeout(() => setToast(null), 4000);
   };
 
-  const confirmBorrow = () => {
-    // Update book status
-    setBooks(prevBooks => 
-      prevBooks.map(b => b.id === selectedBook.id ? { ...b, available: false } : b)
-    );
+  const confirmBorrow = async () => {
+    const isRequest = !selectedBook.available;
     
-    // Update selected book locally for the drawer
-    setSelectedBook(prev => ({ ...prev, available: false }));
+    if (!isRequest) {
+      try {
+        // Send request to real backend to reduce available copies
+        const response = await fetch('http://localhost:5000/api/v1/library/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bookId: selectedBook.id })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          // Update book status locally
+          const updatedAvailable = selectedBook.available_copies - 1;
+          const stillAvailable = updatedAvailable > 0;
+
+          setBooks(prevBooks => 
+            prevBooks.map(b => b.id === selectedBook.id ? { ...b, available_copies: updatedAvailable, available: stillAvailable } : b)
+          );
+          setSelectedBook(prev => ({ ...prev, available_copies: updatedAvailable, available: stillAvailable }));
+          
+          borrowBook(selectedBook.id);
+          setToast(`You have successfully borrowed ${selectedBook.title}. Please pick it up from rack ${selectedBook.rack}.`);
+        } else {
+          setToast(result.message || 'Failed to borrow book.');
+        }
+      } catch (error) {
+        setToast('Network error while requesting the book.');
+      }
+    } else {
+      setToast('Your request has been submitted successfully. The requested book is expected within 6 working days.');
+    }
     
     setShowConfirmModal(false);
-    
-    // Show success toast
-    setToast('Your request has been submitted successfully. The requested book is expected within 6 working days.');
     setTimeout(() => setToast(null), 5000);
   };
 
@@ -112,8 +159,12 @@ const LibraryPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {RECOMMENDED.map(book => (
               <div key={book.id} className="bg-gradient-to-r from-secondary-50 to-white rounded-xl shadow-sm border border-secondary-100 p-5 flex items-start space-x-4 cursor-pointer hover:shadow-md transition-all" onClick={() => setSelectedBook(book)}>
-                <div className="w-16 h-24 bg-secondary-200 rounded flex-shrink-0 flex items-center justify-center text-secondary-600">
-                  <Book className="w-8 h-8" />
+                <div className="w-16 h-24 bg-secondary-200 rounded flex-shrink-0 flex items-center justify-center text-secondary-600 overflow-hidden relative">
+                  {book.image ? (
+                    <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <Book className="w-8 h-8" />
+                  )}
                 </div>
                 <div className="flex-1">
                   <h3 className="font-bold text-gray-900">{book.title}</h3>
@@ -146,8 +197,12 @@ const LibraryPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredBooks.map(book => (
               <div key={book.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
-                <div className={`h-40 ${book.cover} flex items-center justify-center`}>
-                  <Book className="w-12 h-12 opacity-50" />
+                <div className={`h-40 ${book.cover} flex items-center justify-center overflow-hidden relative`}>
+                  {book.image ? (
+                    <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <Book className="w-12 h-12 opacity-50" />
+                  )}
                 </div>
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-2">
@@ -187,8 +242,12 @@ const LibraryPage = () => {
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-6">
-                <div className={`w-full h-64 ${selectedBook.cover || 'bg-primary-50 text-primary-300'} rounded-xl mb-6 flex items-center justify-center`}>
-                  <Book className="w-20 h-20 opacity-50" />
+                <div className={`w-full h-64 ${selectedBook.cover || 'bg-primary-50 text-primary-300'} rounded-xl mb-6 flex items-center justify-center overflow-hidden relative shadow-inner`}>
+                  {selectedBook.image ? (
+                    <img src={selectedBook.image} alt={selectedBook.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <Book className="w-20 h-20 opacity-50" />
+                  )}
                 </div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-1 rounded-full">{selectedBook.dept}</span>
@@ -219,7 +278,7 @@ const LibraryPage = () => {
                 </div>
               </div>
               <div className="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
-                <Button className="flex-1" variant="primary" disabled={!selectedBook.available} onClick={handleBorrowClick}>
+                <Button className="flex-1" variant={selectedBook.available ? "primary" : "outline"} onClick={handleBorrowClick}>
                   {selectedBook.available ? 'Borrow Book' : 'Request Book'}
                 </Button>
                 <Button className="flex-1" variant="outline" onClick={handleWishlistClick}>Save to Wishlist</Button>
@@ -238,9 +297,14 @@ const LibraryPage = () => {
               <div className="w-12 h-12 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Confirm Borrowing</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-2">
+                {selectedBook?.available ? 'Confirm Borrowing' : 'Request Book'}
+              </h3>
               <p className="text-sm text-gray-500 mb-6">
-                Are you sure you want to borrow <strong>{selectedBook?.title}</strong>? You will need to pick it up from rack {selectedBook?.rack} within 24 hours.
+                {selectedBook?.available 
+                  ? `Are you sure you want to borrow ${selectedBook?.title}? You will need to pick it up from rack ${selectedBook?.rack} within 24 hours.`
+                  : `Are you sure you want to request ${selectedBook?.title}? You will be notified when the book is returned or procured.`
+                }
               </p>
               <div className="flex gap-3">
                 <Button variant="outline" className="flex-1" onClick={() => setShowConfirmModal(false)}>Cancel</Button>
