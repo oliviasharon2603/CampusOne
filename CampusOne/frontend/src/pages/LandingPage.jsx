@@ -1,6 +1,9 @@
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import FeaturesSection from '../components/FeaturesSection';
+import DepartmentsPreview from '../components/DepartmentsPreview';
+import AIFeatureSection from '../components/AIFeatureSection';
+import AboutSection from '../components/AboutSection';
 
 const LandingPage = () => {
   return (
@@ -9,8 +12,14 @@ const LandingPage = () => {
       <main>
         <HeroSection />
         <FeaturesSection />
+        <DepartmentsPreview />
+        <AIFeatureSection />
+        <AboutSection />
       </main>
-      {/* Footer will go here */}
+      
+      <footer className="bg-gray-900 text-gray-400 py-12 border-t border-gray-800 text-center">
+        <p>&copy; {new Date().getFullYear()} CampusOne, Trichy, Tamil Nadu. All rights reserved.</p>
+      </footer>
     </div>
   );
 };
