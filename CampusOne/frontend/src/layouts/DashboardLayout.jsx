@@ -3,9 +3,11 @@ import Sidebar from '../components/dashboard/Sidebar';
 import TopNav from '../components/dashboard/TopNav';
 import { useState } from 'react';
 import { Bot } from 'lucide-react';
+import Chatbot from '../components/dashboard/Chatbot';
 
 const DashboardLayout = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-50  font-sans transition-colors duration-300 selection:bg-primary-100  selection:text-primary-900  text-gray-900 ">
@@ -24,9 +26,15 @@ const DashboardLayout = () => {
       </div>
 
       {/* Floating AI Assistant Button (Global) */}
-      <button className="fixed bottom-6 right-6 w-14 h-14 bg-secondary-600 hover:bg-secondary-500 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center z-50">
+      <button 
+        onClick={() => setIsChatbotOpen(true)}
+        className={`fixed bottom-6 right-6 w-14 h-14 bg-secondary-600 hover:bg-secondary-500 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center justify-center z-40 ${isChatbotOpen ? 'opacity-0 scale-75 pointer-events-none' : 'opacity-100 scale-100'}`}
+      >
         <Bot className="w-6 h-6" />
       </button>
+
+      {/* Chatbot Side Panel */}
+      <Chatbot isOpen={isChatbotOpen} onClose={() => setIsChatbotOpen(false)} />
 
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
