@@ -25,9 +25,10 @@ const EventsPage = () => {
   
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [formData, setFormData] = useState({ name: '', dept: '', year: '', phone: '', reason: '' });
   const [toast, setToast] = useState(null);
   
-  const { registerEvent } = useUserActivity();
+  const { registerEvent, dbUserId, userName } = useUserActivity();
   
   // Countdown Timer Logic
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -55,6 +56,11 @@ const EventsPage = () => {
       const now = new Date().getTime();
       const distance = HERO_EVENT.targetDate.getTime() - now;
 
+      if (distance < 0) {
+        clearInterval(timer);
+        return;
+      }
+
       setTimeLeft({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
         hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
@@ -71,28 +77,52 @@ const EventsPage = () => {
   };
 
   const handleRegisterClick = (event) => {
+    if (!dbUserId) {
+      showToast('Please log in first to register.');
+      return;
+    }
     setSelectedEvent(event);
     setShowConfirmModal(true);
   };
 
-  const handleHeroRegister = () => {
-    setHeroRegistered(true);
-    registerEvent(HERO_EVENT.id);
-    showToast(`You have successfully registered for ${HERO_EVENT.title}!`);
-  };
-
-  const confirmRegistration = async () => {
+  const handleHeroRegister = async () => {
+    if (!dbUserId) {
+      showToast('Please log in first to register.');
+      return;
+    }
     try {
       const response = await fetch('http://localhost:5000/api/v1/events/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eventId: selectedEvent.id })
+        body: JSON.stringify({ eventId: HERO_EVENT.id, userId: dbUserId, name: userName })
+      });
+      if (response.ok) {
+        setHeroRegistered(true);
+        registerEvent(HERO_EVENT.id);
+        showToast(`You have successfully registered for ${HERO_EVENT.title}!`);
+      }
+    } catch(err) {
+       showToast(`Failed to register.`);
+    }
+  };
+
+  const confirmRegistration = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.dept || !formData.year || !formData.phone || !formData.reason) {
+      showToast('Please fill out all compulsory fields.');
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:5000/api/v1/events/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ eventId: selectedEvent.id, userId: dbUserId, name: formData.name, formData })
       });
       const result = await response.json();
       
       if (result.success) {
         setEvents(prev => 
-          prev.map(e => e.id === selectedEvent.id ? { ...e, registered: true, seats: e.seats > 0 ? e.seats - 1 : 0 } : e)
+          prev.map(ev => ev.id === selectedEvent.id ? { ...ev, registered: true, seats: ev.seats > 0 ? ev.seats - 1 : 0 } : ev)
         );
         registerEvent(selectedEvent.id);
         showToast(`Successfully registered for ${selectedEvent.title}. Check your notifications for the ticket.`);
@@ -105,6 +135,7 @@ const EventsPage = () => {
     
     setShowConfirmModal(false);
     setSelectedEvent(null);
+    setFormData({ name: '', dept: '', year: '', phone: '', reason: '' });
   };
 
   const handleViewHackathon = () => {
@@ -328,23 +359,49 @@ const EventsPage = () => {
         )}
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Registration Form Modal */}
       {showConfirmModal && selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-primary-900/10 backdrop-blur-[2px] transition-opacity" onClick={() => setShowConfirmModal(false)}></div>
-          <div className="bg-white rounded-xl shadow-xl max-w-sm w-full relative z-10 animate-in zoom-in-95 duration-200">
-            <div className="p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center mx-auto mb-4">
-                <Ticket className="w-6 h-6" />
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full relative z-10 animate-in zoom-in-95 duration-200">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-gray-900">Register for Event</h3>
+                <button onClick={() => setShowConfirmModal(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5"/></button>
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Confirm Registration</h3>
               <p className="text-sm text-gray-500 mb-6">
-                Are you sure you want to register for <strong>{selectedEvent.title}</strong>? Your student ID will be verified at the venue.
+                You are registering for <strong>{selectedEvent.title}</strong>. Please fill out the compulsory details below.
               </p>
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setShowConfirmModal(false)}>Cancel</Button>
-                <Button variant="primary" className="flex-1" onClick={confirmRegistration}>Confirm</Button>
-              </div>
+              
+              <form onSubmit={confirmRegistration} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                  <input type="text" required className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Department *</label>
+                    <input type="text" required className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.dept} onChange={e => setFormData({...formData, dept: e.target.value})} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Year *</label>
+                    <input type="text" required className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.year} onChange={e => setFormData({...formData, year: e.target.value})} />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                  <input type="tel" required className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Why do you want to join? *</label>
+                  <textarea required rows="3" className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.reason} onChange={e => setFormData({...formData, reason: e.target.value})}></textarea>
+                </div>
+                
+                <div className="flex gap-3 pt-4">
+                  <Button variant="outline" className="flex-1" type="button" onClick={() => setShowConfirmModal(false)}>Cancel</Button>
+                  <Button variant="primary" className="flex-1" type="submit">Submit Registration</Button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

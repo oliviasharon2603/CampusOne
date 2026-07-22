@@ -1,135 +1,93 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Users, Calendar, MapPin, CheckCircle2, X, Star, ExternalLink, Activity, UsersRound } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { useUserActivity } from '../context/UserActivityContext';
 
-// Mock Data for Clubs
-const CLUBS_DATA = [
-  {
-    id: 1,
-    name: "TechNova Coding Club",
-    category: "Technical",
-    members: 245,
-    tagline: "Code, Create, Innovate.",
-    description: "The official computer science club of CampusOne. We host weekly coding challenges, hackathons, and guest lectures from industry experts.",
-    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=600",
-    theme: "bg-primary-50 text-primary-600",
-    coreTeam: [
-      { name: "Alice Zhang", role: "President", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" },
-      { name: "Bob Smith", role: "Technical Lead", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" }
-    ],
-    upcomingEvents: [
-      { name: "Winter Hackathon", date: "Dec 15, 2026", location: "Main Lab" },
-      { name: "React Workshop", date: "Nov 20, 2026", location: "Virtual" }
-    ]
-  },
-  {
-    id: 2,
-    name: "CampusOne Dance Troupe",
-    category: "Cultural",
-    members: 85,
-    tagline: "Express yourself through movement.",
-    description: "Join the most energetic society on campus! We perform at all major college fests and represent CampusOne in inter-college competitions.",
-    image: "https://images.unsplash.com/photo-1547153760-18fc86324498?auto=format&fit=crop&q=80&w=600",
-    theme: "bg-secondary-50 text-secondary-600",
-    coreTeam: [
-      { name: "Sarah Connor", role: "Captain", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80" }
-    ],
-    upcomingEvents: [
-      { name: "Annual Fest Performance", date: "Jan 10, 2027", location: "Auditorium" }
-    ]
-  },
-  {
-    id: 3,
-    name: "Robotics & Automation Society",
-    category: "Technical",
-    members: 120,
-    tagline: "Building the future, one circuit at a time.",
-    description: "We design, build, and program robots. From line-followers to autonomous drones, this is where hardware meets software.",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=600",
-    theme: "bg-primary-50 text-primary-600",
-    coreTeam: [
-      { name: "David Chen", role: "Hardware Lead", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=100&q=80" },
-      { name: "Emma Wilson", role: "Software Lead", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=100&q=80" }
-    ],
-    upcomingEvents: [
-      { name: "Drone Racing League", date: "Dec 05, 2026", location: "Sports Ground" }
-    ]
-  },
-  {
-    id: 4,
-    name: "Titans Basketball Club",
-    category: "Sports",
-    members: 45,
-    tagline: "Leave it all on the court.",
-    description: "The official basketball club. We hold regular practice sessions, fitness camps, and compete in the regional university leagues.",
-    image: "https://images.unsplash.com/photo-1519861531473-9200262188bf?auto=format&fit=crop&q=80&w=600",
-    theme: "bg-accent-50 text-accent-600",
-    coreTeam: [
-      { name: "Marcus Johnson", role: "Team Captain", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" }
-    ],
-    upcomingEvents: [
-      { name: "Inter-College Tournament", date: "Nov 28, 2026", location: "Indoor Stadium" }
-    ]
-  },
-  {
-    id: 5,
-    name: "Green Earth Society",
-    category: "Social",
-    members: 310,
-    tagline: "Sustainability starts on campus.",
-    description: "A community dedicated to environmental conservation. We organize tree plantation drives, recycling workshops, and campus cleanups.",
-    image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=600",
-    theme: "bg-success-50 text-success-600",
-    coreTeam: [
-      { name: "Lily Evans", role: "Coordinator", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" }
-    ],
-    upcomingEvents: [
-      { name: "Weekend Campus Cleanup", date: "This Saturday", location: "Main Gate" }
-    ]
-  },
-  {
-    id: 6,
-    name: "Photography & Media Club",
-    category: "Cultural",
-    members: 150,
-    tagline: "Capturing moments that matter.",
-    description: "From event coverage to creative photoshoots, we cover all things visual. Members get access to the dark room and studio equipment.",
-    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=600",
-    theme: "bg-warning-50 text-warning-600",
-    coreTeam: [
-      { name: "James Potter", role: "Chief Editor", image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=100&q=80" }
-    ],
-    upcomingEvents: [
-      { name: "Light Painting Workshop", date: "Nov 15, 2026", location: "Studio A" }
-    ]
-  }
-];
-
 const CATEGORIES = ["All", "Technical", "Cultural", "Sports", "Social"];
 
 const ClubsPage = () => {
+  const [clubsData, setClubsData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   
   const [selectedClub, setSelectedClub] = useState(null); // For Details Modal
   const [activeJoinClub, setJoinClub] = useState(null); // Renamed to avoid collision with context action
   const [toast, setToast] = useState(null);
+  const [joinReason, setJoinReason] = useState('');
 
-  const { joinClub } = useUserActivity();
+  const { dbUserId, userName, userEmail } = useUserActivity();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const fetchClubs = async () => {
+      try {
+        const url = dbUserId 
+          ? `http://localhost:5000/api/v1/clubs?userId=${dbUserId}`
+          : `http://localhost:5000/api/v1/clubs`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.success) {
+          // Map backend fields to frontend expected fields
+          setClubsData(data.data.map(club => ({
+            ...club,
+            tagline: club.description ? club.description.substring(0, 40) + '...' : '', 
+            theme: "bg-primary-50 text-primary-600",
+            members: club.members || 0, // Backend sends it as 'members'
+            coreTeam: club.incharge_name ? [{ name: club.incharge_name, role: 'In-charge', contact: club.contact_details, image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100' }] : [],
+            upcomingEvents: []
+          })));
+        }
+      } catch (err) {
+        console.error('Error fetching clubs:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchClubs();
+  }, [dbUserId]);
 
   // Filter Logic
-  const filteredClubs = CLUBS_DATA.filter(club => {
+  const filteredClubs = clubsData.filter(club => {
     const matchesCategory = activeTab === 'All' || club.category === activeTab;
-    const matchesSearch = club.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          club.tagline.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = club.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  const handleJoinSubmit = () => {
-    joinClub(activeJoinClub.id);
-    setToast(`You have successfully submitted your application to join ${activeJoinClub.name}! The core team will review it shortly.`);
+  const handleJoinSubmit = async () => {
+    if (!dbUserId) {
+      setToast('Please log in first to join a club.');
+      setTimeout(() => setToast(null), 5000);
+      return;
+    }
+    if (!joinReason.trim()) {
+      setToast('Please let us know why you want to join this club.');
+      setTimeout(() => setToast(null), 5000);
+      return;
+    }
+    try {
+      const res = await fetch(`http://localhost:5000/api/v1/clubs/${activeJoinClub.id}/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          student_name: userName || 'Student', 
+          email: userEmail || 'student@campusone.edu', 
+          reason: joinReason 
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setClubsData(prev => prev.map(c => c.id === activeJoinClub.id ? { ...c, isMember: true, members: (c.members || 0) + 1 } : c));
+        setToast(`You have successfully registered for ${activeJoinClub.name}! The coordinator will reach out shortly.`);
+      } else {
+        setToast(data.message || 'Failed to join club.');
+      }
+    } catch (err) {
+      console.error(err);
+      setToast('Failed to join club.');
+    }
     setJoinClub(null);
+    setJoinReason('');
     setTimeout(() => setToast(null), 5000);
   };
 
@@ -234,9 +192,15 @@ const ClubsPage = () => {
                   <Button variant="outline" className="w-full justify-center" onClick={() => setSelectedClub(club)}>
                     View Details
                   </Button>
-                  <Button variant="primary" className="w-full justify-center" onClick={() => setJoinClub(club)}>
-                    Join Club
-                  </Button>
+                  {club.isMember ? (
+                    <Button variant="outline" className="w-full justify-center opacity-75" disabled>
+                      Registered
+                    </Button>
+                  ) : (
+                    <Button variant="primary" className="w-full justify-center" onClick={() => setJoinClub(club)}>
+                      Join Club
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -298,10 +262,11 @@ const ClubsPage = () => {
                         <img src={member.image} alt={member.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
                         <div>
                           <p className="font-bold text-gray-900">{member.name}</p>
-                          <p className="text-sm font-medium text-primary-600">{member.role}</p>
+                          <p className="text-xs text-gray-500">{member.role} • {member.contact || 'No contact'}</p>
                         </div>
                       </div>
                     ))}
+
                   </div>
                 </section>
 
@@ -356,10 +321,13 @@ const ClubsPage = () => {
               
               <div className="space-y-4 mb-8 text-left bg-gray-50 p-4 rounded-xl border border-gray-100">
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Why do you want to join? (Optional)</label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Why do you want to join? *</label>
                   <textarea 
                     className="w-full bg-white border border-gray-200 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none h-24"
                     placeholder="Tell us about your interests..."
+                    value={joinReason}
+                    onChange={(e) => setJoinReason(e.target.value)}
+                    required
                   ></textarea>
                 </div>
               </div>

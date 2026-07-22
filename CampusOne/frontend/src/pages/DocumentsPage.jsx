@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FileText, Printer, Download, ChevronLeft, Calendar as CalendarIcon, Briefcase, GraduationCap, Award } from 'lucide-react';
 import Button from '../components/ui/Button';
 import { auth } from '../firebase';
+import { useUserActivity } from '../context/UserActivityContext';
 
 const DOC_TEMPLATES = [
   {
@@ -48,12 +49,12 @@ const DOC_TEMPLATES = [
     ]
   }
 ];
-
 const DocumentsPage = () => {
   const [activeDoc, setActiveDoc] = useState(null);
   const [formData, setFormData] = useState({});
   const [previewMode, setPreviewMode] = useState(false);
   const [toast, setToast] = useState(null);
+  const { dbUserId } = useUserActivity();
 
   const userName = auth.currentUser?.displayName || 'Student Name';
   const currentDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -64,9 +65,20 @@ const DocumentsPage = () => {
     setPreviewMode(false);
   };
 
-  const handleGenerate = (e) => {
+  const handleGenerate = async (e) => {
     e.preventDefault();
     setPreviewMode(true);
+    if (dbUserId) {
+      try {
+        await fetch('http://localhost:5000/api/v1/documents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: dbUserId, title: activeDoc.title, type: activeDoc.id })
+        });
+      } catch (err) {
+        console.error('Error saving document:', err);
+      }
+    }
   };
 
   const handlePrint = () => {

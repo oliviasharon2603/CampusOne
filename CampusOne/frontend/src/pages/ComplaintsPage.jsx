@@ -2,63 +2,8 @@ import { useState, useRef } from 'react';
 import { AlertCircle, Image as ImageIcon, Send, MessageSquare, Clock, Camera, X, Building, Laptop, Home, Coffee, CheckCircle2, ShieldAlert } from 'lucide-react';
 import Button from '../components/ui/Button';
 
-// Mock Data for the Feed
-const INITIAL_COMPLAINTS = [
-  {
-    id: 1,
-    category: 'Infrastructure',
-    status: 'IN PROGRESS', // PENDING, IN PROGRESS, RESOLVED
-    author: { name: 'Karthik R.', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80' },
-    timestamp: 'Yesterday at 2:30 PM',
-    location: 'Lab 4, CSE Block',
-    description: 'The air conditioning unit in Lab 4 has been leaking water since yesterday morning. It is creating a puddle near the server racks, which is a major safety hazard.',
-    image: 'https://images.unsplash.com/photo-1527066236129-cbaf7e20f4c0?auto=format&fit=crop&w=600&q=80', // Water puddle
-    replies: [
-      { id: 101, author: 'Campus Maintenance Admin', isAdmin: true, avatar: 'https://ui-avatars.com/api/?name=Maintenance&background=eab308&color=fff', text: 'Thank you for reporting this. A technician has been dispatched and is currently working on fixing the leak. Status updated to In Progress.', timestamp: 'Today at 9:00 AM' }
-    ]
-  },
-  {
-    id: 2,
-    category: 'Hostel',
-    status: 'PENDING',
-    author: { name: 'Sneha Reddy', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80' },
-    timestamp: '5 hours ago',
-    location: 'Girls Hostel A, 3rd Floor',
-    description: 'The Wi-Fi router on the 3rd floor has been completely dead for the last two days. We have online assignments due this weekend, please fix this urgently.',
-    image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=600&q=80', // Router
-    replies: []
-  },
-  {
-    id: 3,
-    category: 'Cafeteria',
-    status: 'RESOLVED',
-    author: { name: 'Rahul Sharma', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80' },
-    timestamp: 'Last Week',
-    location: 'Main Cafeteria',
-    description: 'The water purifier near the entrance is dispensing murky water. It seems the filters haven\'t been changed in a long time.',
-    image: 'https://images.unsplash.com/photo-1548839140-29a749e1bc4c?auto=format&fit=crop&w=600&q=80', // Water cooler
-    replies: [
-      { 
-        id: 103, 
-        author: 'Cafeteria Management', 
-        isAdmin: true, 
-        avatar: 'https://ui-avatars.com/api/?name=Admin&background=22c55e&color=fff', 
-        text: 'The filters have been completely replaced and the machine was serviced this morning. Safe drinking water is now restored. Marking as Resolved.', 
-        image: 'https://images.unsplash.com/photo-1550508126-c737976e1f0e?auto=format&fit=crop&q=80&w=400', // Clean water / filter
-        timestamp: '3 days ago' 
-      },
-      { 
-        id: 104, 
-        author: 'Rahul Sharma', 
-        isAdmin: false, 
-        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80', 
-        text: 'Confirmed, the water is clean now. Thank you!', 
-        timestamp: '2 days ago' 
-      }
-    ]
-  }
-];
-
+import { useUserActivity } from '../context/UserActivityContext';
+import { useEffect } from 'react';
 const CATEGORIES = [
   { id: 'Infrastructure', icon: Building },
   { id: 'Academic', icon: Laptop },
@@ -67,21 +12,53 @@ const CATEGORIES = [
 ];
 
 const ComplaintsPage = () => {
-  const [complaints, setComplaints] = useState(INITIAL_COMPLAINTS);
+  const [complaints, setComplaints] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Composer State
-  const [category, setCategory] = useState('Infrastructure');
+  const [category, setCategory] = useState('Hostel');
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const fileInputRef = useRef(null);
+  const { dbUserId } = useUserActivity();
 
   // Reply State
   const [replyingTo, setReplyingTo] = useState(null); // Complaint ID
   const [replyText, setReplyText] = useState('');
 
-  // Handle local image upload via file input
+  useEffect(() => {
+    const fetchComplaints = async () => {
+      try {
+        const url = dbUserId 
+          ? `http://localhost:5000/api/v1/complaints?userId=${dbUserId}`
+          : `http://localhost:5000/api/v1/complaints`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.success) {
+          setComplaints(data.data.map(c => ({
+            id: c.id,
+            category: c.category,
+            title: c.title,
+            status: c.status.toUpperCase(),
+            timestamp: c.created_at,
+            location: 'Campus',
+            description: c.description,
+            author: { name: 'User', avatar: 'https://ui-avatars.com/api/?name=User' },
+            replies: []
+          })));
+        }
+      } catch (err) {
+        console.error('Error fetching complaints:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchComplaints();
+  }, [dbUserId]);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -96,28 +73,45 @@ const ComplaintsPage = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleCreateComplaint = (e) => {
+  const handleSubmitComplaint = async (e) => {
     e.preventDefault();
-    if (!description.trim() || !location.trim()) return;
+    if (!title.trim() || !description.trim()) return;
 
-    const newComplaint = {
-      id: Date.now(),
-      category: category,
-      status: 'PENDING',
-      author: { name: 'You (Current User)', avatar: 'https://ui-avatars.com/api/?name=Current+User&background=6366f1&color=fff' },
-      timestamp: 'Just now',
-      location: location,
-      description: description,
-      image: previewUrl, 
-      replies: []
-    };
+    if (!dbUserId) {
+      alert("Please login first.");
+      return;
+    }
 
-    setComplaints([newComplaint, ...complaints]);
-    
-    // Reset form
-    setDescription('');
-    setLocation('');
-    clearImage();
+    try {
+      const res = await fetch('http://localhost:5000/api/v1/complaints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: dbUserId, title, category, description })
+      });
+      const data = await res.json();
+      if (data.success) {
+        const newComplaint = {
+          id: Date.now(),
+          category,
+          title,
+          status: 'PENDING',
+          timestamp: 'Just now',
+          author: { name: 'You (Current User)', avatar: 'https://ui-avatars.com/api/?name=Current+User&background=6366f1&color=fff' },
+          location: location || 'Campus',
+          description: description,
+          image: previewUrl,
+          replies: []
+        };
+        setComplaints([newComplaint, ...complaints]);
+        
+        setTitle('');
+        setDescription('');
+        setLocation('');
+        clearImage();
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleReplySubmit = (complaintId) => {
@@ -194,7 +188,7 @@ const ComplaintsPage = () => {
           </div>
         </div>
         
-        <form onSubmit={handleCreateComplaint} className="p-6">
+        <form onSubmit={handleSubmitComplaint} className="p-6">
           <div className="space-y-4">
             <div>
               <textarea 
@@ -261,9 +255,9 @@ const ComplaintsPage = () => {
       </div>
 
       {/* The Conversation Feed */}
-      <div className="space-y-6">
+      <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6 [&>div]:break-inside-avoid">
         {complaints.map(complaint => (
-          <div key={complaint.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div key={complaint.id} className="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
             <div className="p-6">
               
               {/* Complaint Header */}

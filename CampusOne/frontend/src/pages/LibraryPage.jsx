@@ -13,30 +13,41 @@ const LibraryPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showWishlist, setShowWishlist] = useState(false);
+  const [wishlistIds, setWishlistIds] = useState([]);
+  const [isAISearching, setIsAISearching] = useState(false);
   const [toast, setToast] = useState(null);
   
-  const { borrowBook } = useUserActivity();
+  const { borrowBook, dbUserId, userName } = useUserActivity();
+
+  // Fetch wishlist
+  useEffect(() => {
+    if (!dbUserId) return;
+    fetch(`http://localhost:5000/api/v1/library/wishlist?userId=${dbUserId}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) setWishlistIds(data.data);
+      });
+  }, [dbUserId]);
 
   // Fetch books from real backend
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/v1/library/books');
-        const result = await response.json();
-        if (result.success) {
-          // Map DB columns to frontend state format
-          const mappedBooks = result.data.map(b => ({
+        const res = await fetch('http://localhost:5000/api/v1/library/books');
+        const data = await res.json();
+        if (data.success) {
+          setBooks(data.data.map(b => ({
             id: b.id,
             title: b.title,
             author: b.author,
-            dept: b.category, // using category as dept for UI
+            dept: b.category || 'General',
             available: b.available > 0,
-            available_copies: b.available,
-            rack: 'A-12', // Mock rack
+            availabilityText: `${b.available} / ${b.total} Copies Available`,
             cover: 'bg-primary-100 text-primary-600',
-            image: b.cover
-          }));
-          setBooks(mappedBooks);
+            image: b.cover,
+            rack: b.rack
+          })));
         }
       } catch (error) {
         console.error('Failed to fetch books', error);
@@ -47,6 +58,20 @@ const LibraryPage = () => {
     fetchBooks();
   }, []);
 
+  const [borrowHistory, setBorrowHistory] = useState([]);
+  const [bookRequests, setBookRequests] = useState([]);
+
+  useEffect(() => {
+    if (!dbUserId) return;
+    fetch(`http://localhost:5000/api/v1/library/borrow-history?userId=${dbUserId}`)
+      .then(res => res.json())
+      .then(data => { if (data.success) setBorrowHistory(data.data); });
+    
+    fetch(`http://localhost:5000/api/v1/library/requests?userId=${dbUserId}`)
+      .then(res => res.json())
+      .then(data => { if (data.success) setBookRequests(data.data); });
+  }, [dbUserId]);
+
   // Filter books based on search input
   const filteredBooks = books.filter(book => 
     book.title.toLowerCase().includes(search.toLowerCase()) || 
@@ -55,12 +80,74 @@ const LibraryPage = () => {
   );
 
   const handleBorrowClick = () => {
+    if (!dbUserId) {
+      setToast('Please log in first to borrow a book.');
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
     setShowConfirmModal(true);
   };
 
-  const handleWishlistClick = () => {
-    setSelectedBook(null);
-    setToast(`${selectedBook.title} has been added to your Wishlist!`);
+  const handleWishlistClick = async () => {
+    if (!dbUserId) {
+      setToast('Please log in first to use the wishlist.');
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost:5000/api/v1/library/wishlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookId: selectedBook.id, userId: dbUserId })
+      });
+      const result = await response.json();
+      if (result.success) {
+        if (result.action === 'added') {
+          setWishlistIds(prev => [...prev, selectedBook.id]);
+          setToast(`${selectedBook.title} has been added to your Wishlist!`);
+        } else {
+          setWishlistIds(prev => prev.filter(id => id !== selectedBook.id));
+          setToast(`${selectedBook.title} removed from Wishlist.`);
+        }
+      }
+    } catch(err) {
+      setToast('Failed to update wishlist.');
+    }
+    setTimeout(() => setToast(null), 4000);
+  };
+
+  const handleAISearch = async () => {
+    if (!search) {
+      setToast('Please enter a search query for AI Search.');
+      setTimeout(() => setToast(null), 4000);
+      return;
+    }
+    setIsAISearching(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/v1/library/ai-search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: search })
+      });
+      const result = await response.json();
+      if (result.success) {
+        setBooks(result.data.map(b => ({
+          id: b.id,
+          title: b.title,
+          author: b.author,
+          dept: b.category || 'General',
+          available: b.available > 0,
+          availabilityText: `${b.available} / ${b.total} Copies Available`,
+          cover: 'bg-primary-100 text-primary-600',
+          image: b.cover,
+          rack: b.rack
+        })));
+        setToast('AI Search completed successfully.');
+      }
+    } catch (err) {
+      setToast('AI Search failed.');
+    }
+    setIsAISearching(false);
     setTimeout(() => setToast(null), 4000);
   };
 
@@ -73,7 +160,7 @@ const LibraryPage = () => {
         const response = await fetch('http://localhost:5000/api/v1/library/request', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ bookId: selectedBook.id })
+          body: JSON.stringify({ bookId: selectedBook.id, userId: dbUserId, name: userName })
         });
         const result = await response.json();
 
@@ -140,11 +227,14 @@ const LibraryPage = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+          <Button variant="outline" className="whitespace-nowrap" onClick={() => setShowWishlist(true)}>
+            <Star className="w-4 h-4 mr-1 inline-block" /> Wishlist ({wishlistIds.length})
+          </Button>
           <Button variant="outline" icon={Filter} className="whitespace-nowrap">
             Filters
           </Button>
-          <Button variant="primary" className="whitespace-nowrap">
-            AI Search
+          <Button variant="primary" className="whitespace-nowrap" onClick={handleAISearch} disabled={isAISearching}>
+            {isAISearching ? 'Searching...' : 'AI Search'}
           </Button>
         </div>
       </div>
@@ -228,6 +318,73 @@ const LibraryPage = () => {
         )}
       </div>
 
+      {/* Borrow History and Requests */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+        {/* Borrow History */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+            <BookOpen className="w-5 h-5 mr-2 text-primary-600" />
+            My Borrow History
+          </h2>
+          <div className="space-y-4">
+            {borrowHistory.length === 0 ? (
+              <p className="text-gray-500 text-sm">No borrow history found.</p>
+            ) : (
+              borrowHistory.map(history => (
+                <div key={history.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-12 bg-gray-100 rounded overflow-hidden">
+                      {history.book_cover ? <img src={history.book_cover} className="w-full h-full object-cover" /> : <Book className="w-5 h-5 m-2 text-gray-400" />}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-sm">{history.book_title}</h4>
+                      <p className="text-xs text-gray-500">Borrowed: {new Date(history.borrowed_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-semibold px-2 py-1 rounded-full ${history.status === 'returned' ? 'bg-success-50 text-success-700' : 'bg-warning-50 text-warning-700'}`}>
+                    {history.status.charAt(0).toUpperCase() + history.status.slice(1)}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Book Requests */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+            <Book className="w-5 h-5 mr-2 text-primary-600" />
+            My Book Requests
+          </h2>
+          <div className="space-y-4">
+            {bookRequests.length === 0 ? (
+              <p className="text-gray-500 text-sm">No active requests.</p>
+            ) : (
+              bookRequests.map(req => (
+                <div key={req.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-12 bg-gray-100 rounded overflow-hidden">
+                      {req.book_cover ? <img src={req.book_cover} className="w-full h-full object-cover" /> : <Book className="w-5 h-5 m-2 text-gray-400" />}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-sm">{req.book_title}</h4>
+                      <p className="text-xs text-gray-500">Requested: {new Date(req.requested_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                    req.status === 'pending' ? 'bg-warning-50 text-warning-700' :
+                    req.status === 'available' ? 'bg-success-50 text-success-700' :
+                    'bg-gray-100 text-gray-700'
+                  }`}>
+                    {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Book Details Drawer (Desktop/Tablet) */}
       {selectedBook && (
         <div className="fixed inset-0 z-40 overflow-hidden">
@@ -281,7 +438,9 @@ const LibraryPage = () => {
                 <Button className="flex-1" variant={selectedBook.available ? "primary" : "outline"} onClick={handleBorrowClick}>
                   {selectedBook.available ? 'Borrow Book' : 'Request Book'}
                 </Button>
-                <Button className="flex-1" variant="outline" onClick={handleWishlistClick}>Save to Wishlist</Button>
+                <Button className="flex-1" variant={wishlistIds.includes(selectedBook.id) ? "primary" : "outline"} onClick={handleWishlistClick}>
+                  {wishlistIds.includes(selectedBook.id) ? 'In Wishlist' : 'Save to Wishlist'}
+                </Button>
               </div>
             </div>
           </div>
@@ -309,6 +468,43 @@ const LibraryPage = () => {
               <div className="flex gap-3">
                 <Button variant="outline" className="flex-1" onClick={() => setShowConfirmModal(false)}>Cancel</Button>
                 <Button variant="primary" className="flex-1" onClick={confirmBorrow}>Confirm</Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Wishlist Side Drawer */}
+      {showWishlist && (
+        <div className="fixed inset-0 z-40 overflow-hidden">
+          <div className="absolute inset-0 bg-primary-900/10 backdrop-blur-[2px] transition-opacity" onClick={() => setShowWishlist(false)} />
+          <div className="fixed inset-y-0 right-0 max-w-sm w-full flex">
+            <div className="w-full h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900 flex items-center">
+                  <Star className="w-5 h-5 mr-2 text-warning-500 fill-current" /> My Wishlist
+                </h2>
+                <button onClick={() => setShowWishlist(false)} className="text-gray-400 hover:text-gray-500 bg-gray-50 hover:bg-gray-100 p-2 rounded-full">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {wishlistIds.length === 0 ? (
+                  <p className="text-gray-500 text-center mt-10">Your wishlist is empty.</p>
+                ) : (
+                  books.filter(b => wishlistIds.includes(b.id)).map(book => (
+                    <div key={book.id} className="flex gap-4 p-3 border border-gray-100 rounded-lg hover:shadow-sm cursor-pointer" onClick={() => { setSelectedBook(book); setShowWishlist(false); }}>
+                      <div className="w-16 h-20 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
+                        {book.image ? <img src={book.image} className="w-full h-full object-cover" /> : <Book className="w-6 h-6 text-gray-400" />}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 line-clamp-1">{book.title}</h4>
+                        <p className="text-sm text-gray-500">{book.author}</p>
+                        <p className="text-xs text-primary-600 mt-2 font-mono">Rack: {book.rack}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>

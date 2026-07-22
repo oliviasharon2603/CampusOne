@@ -49,7 +49,7 @@ const StudentDashboard = () => {
   };
   
   const navigate = useNavigate();
-  const { borrowedBooks, registeredEvents, joinedClubs } = useUserActivity();
+  const { borrowedBooks, registeredEvents, joinedClubs, dbUserId } = useUserActivity();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -65,13 +65,29 @@ const StudentDashboard = () => {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
 
+  const [announcements, setAnnouncements] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/v1/dashboard');
+        const url = dbUserId ? `http://localhost:5000/api/v1/dashboard?userId=${dbUserId}` : 'http://localhost:5000/api/v1/dashboard';
+        const response = await fetch(url);
         const result = await response.json();
         if (result.success) {
           setDashboardData(result.data);
+        }
+        
+        // Fetch announcements
+        const annRes = await fetch('http://localhost:5000/api/v1/announcements');
+        const annData = await annRes.json();
+        if (annData.success) setAnnouncements(annData.data);
+        
+        // Fetch notifications
+        if (dbUserId) {
+          const notRes = await fetch(`http://localhost:5000/api/v1/notifications?userId=${dbUserId}`);
+          const notData = await notRes.json();
+          if (notData.success) setNotifications(notData.data);
         }
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
@@ -80,7 +96,7 @@ const StudentDashboard = () => {
       }
     };
     fetchDashboardData();
-  }, []);
+  }, [dbUserId]);
 
   const { attendance, aiTip, todaySchedule } = dashboardData;
 
@@ -184,6 +200,33 @@ const StudentDashboard = () => {
               ))}
             </div>
           </div>
+
+          {/* Announcements Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold text-gray-900">Campus Announcements</h2>
+            </div>
+            <div className="space-y-4">
+              {announcements.length === 0 ? (
+                <p className="text-gray-500 text-sm">No announcements at this time.</p>
+              ) : (
+                announcements.map((ann, idx) => (
+                  <div key={idx} className="flex items-start p-4 border border-gray-100 rounded-xl hover:shadow-sm transition-all">
+                    <div className="p-2 rounded-lg bg-primary-50 text-primary-600 mr-4 mt-1">
+                      <AlertCircle className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900">{ann.title}</h4>
+                      <p className="text-sm text-gray-500 mt-1">{ann.content}</p>
+                      <p className="text-xs text-gray-400 mt-2 font-medium">
+                        {new Date(ann.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Right Column (Sidebar) */}
@@ -226,6 +269,28 @@ const StudentDashboard = () => {
               </div>
             </div>
           </div>
+
+          {/* Notifications Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold text-gray-900">Notifications</h2>
+            </div>
+            <div className="space-y-4">
+              {notifications.length === 0 ? (
+                <p className="text-gray-500 text-sm">You have no new notifications.</p>
+              ) : (
+                notifications.map((notif, idx) => (
+                  <div key={idx} className={`p-4 border rounded-xl transition-all ${notif.is_read ? 'bg-white border-gray-100' : 'bg-primary-50 border-primary-100'}`}>
+                    <h4 className="font-semibold text-gray-900">{notif.title}</h4>
+                    <p className="text-sm text-gray-600 mt-1">{notif.message}</p>
+                    <p className="text-xs text-gray-400 mt-2 font-medium">
+                      {new Date(notif.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -248,9 +313,31 @@ const StudentDashboard = () => {
               <p className="text-gray-600 leading-relaxed">{aiTip.desc}</p>
               
               <div className="mt-6 bg-gray-50  p-4 rounded-lg border border-gray-100 ">
-                <p className="text-xs text-gray-500  uppercase font-bold tracking-wider mb-2">Suggested Actions</p>
+                <p className="text-sm font-medium text-gray-700  mb-3">Suggested Actions:</p>
                 <div className="flex gap-3">
-                  <Button size="small" onClick={() => { alert('Reminder added to your Personal Calendar!'); setShowAITip(false); }}>Add to Calendar</Button>
+                  <Button size="small" onClick={() => {
+                    const icsData = [
+                      'BEGIN:VCALENDAR',
+                      'VERSION:2.0',
+                      'PRODID:-//CampusOne//Dashboard//EN',
+                      'BEGIN:VEVENT',
+                      `DTSTART:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+                      `DTEND:${new Date(new Date().getTime() + 60 * 60 * 1000).toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+                      `SUMMARY:${aiTip.title}`,
+                      `DESCRIPTION:${aiTip.desc}`,
+                      'END:VEVENT',
+                      'END:VCALENDAR'
+                    ].join('\n');
+                    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'campusone-event.ics');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    setShowAITip(false); 
+                  }}>Add to Calendar</Button>
                   <Button variant="outline" size="small" onClick={() => setShowAITip(false)}>Dismiss</Button>
                 </div>
               </div>

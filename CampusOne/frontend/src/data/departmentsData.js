@@ -5,7 +5,7 @@ export const DEPARTMENTS_DATA = {
     code: "CSE",
     image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=1200",
     description: "Empowering students with core computing principles, algorithms, and software engineering practices.",
-    stats: [ { label: "Students", value: "320" }, { label: "Faculty", value: "24" }, { label: "Labs", value: "6" } ],
+    stats: [ { label: "Students", value: "320" }, { label: "Faculty", value: "10" }, { label: "Labs", value: "4" } ],
     notices: [
       { id: 1, title: 'Hackathon Registration Deadline Extended', date: 'Oct 12, 2026', type: 'important', content: 'The deadline for the upcoming inter-college hackathon has been extended to Oct 15th. Make sure to submit your team details.' },
       { id: 2, title: 'Workshop on Cloud Computing', date: 'Oct 10, 2026', type: 'event', content: 'A hands-on workshop on AWS and Azure will be held in Lab 1. Open for 3rd and 4th year students.' },
@@ -31,7 +31,7 @@ export const DEPARTMENTS_DATA = {
     code: "AI&DS",
     image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=1200",
     description: "Pioneering the future through intelligent systems and data-driven insights.",
-    stats: [ { label: "Students", value: "240" }, { label: "Faculty", value: "18" }, { label: "Labs", value: "4" } ],
+    stats: [ { label: "Students", value: "240" }, { label: "Faculty", value: "10" }, { label: "Labs", value: "4" } ],
     notices: [
       { id: 1, title: 'Revised Schedule for Mid-Term Lab Exams', date: 'Aug 18, 2026', type: 'important', content: 'The mid-term exams for Machine Learning and Neural Networks have been postponed by one week.' },
       { id: 2, title: 'Call for Papers: AI Student Symposium', date: 'Aug 15, 2026', type: 'general', content: 'Submit your research papers for the upcoming symposium. Selected papers will be published in the department journal.' },
@@ -58,7 +58,7 @@ export const DEPARTMENTS_DATA = {
     code: "AI&ML",
     image: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&q=80&w=1200",
     description: "Focusing on advanced machine learning algorithms and intelligent automation.",
-    stats: [ { label: "Students", value: "180" }, { label: "Faculty", value: "15" }, { label: "Labs", value: "3" } ],
+    stats: [ { label: "Students", value: "180" }, { label: "Faculty", value: "10" }, { label: "Labs", value: "4" } ],
     notices: [
       { id: 1, title: 'ML Models Deployment Workshop', date: 'Sep 20, 2026', type: 'event', content: 'Learn how to deploy your trained models using Docker and Kubernetes.' }
     ],
@@ -80,7 +80,7 @@ export const DEPARTMENTS_DATA = {
     code: "IT",
     image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&q=80&w=1200",
     description: "Innovating network systems, cybersecurity, and modern web applications.",
-    stats: [ { label: "Students", value: "280" }, { label: "Faculty", value: "20" }, { label: "Labs", value: "5" } ],
+    stats: [ { label: "Students", value: "280" }, { label: "Faculty", value: "10" }, { label: "Labs", value: "4" } ],
     notices: [
       { id: 1, title: 'Cybersecurity Awareness Seminar', date: 'Nov 01, 2026', type: 'general', content: 'Mandatory seminar on best practices for network security and data privacy.' }
     ],
@@ -102,7 +102,7 @@ export const DEPARTMENTS_DATA = {
     code: "CIVIL",
     image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&q=80&w=1200",
     description: "Designing and building the sustainable infrastructure of tomorrow.",
-    stats: [ { label: "Students", value: "200" }, { label: "Faculty", value: "16" }, { label: "Labs", value: "8" } ],
+    stats: [ { label: "Students", value: "200" }, { label: "Faculty", value: "10" }, { label: "Labs", value: "4" } ],
     notices: [
       { id: 1, title: 'Surveying Camp Schedule', date: 'Oct 25, 2026', type: 'important', content: 'The annual surveying camp will commence on Nov 5th. All 3rd year students must register.' }
     ],
@@ -124,7 +124,7 @@ export const DEPARTMENTS_DATA = {
     code: "MECH",
     image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1200",
     description: "Driving innovation in manufacturing, thermodynamics, and robotics.",
-    stats: [ { label: "Students", value: "250" }, { label: "Faculty", value: "22" }, { label: "Labs", value: "10" } ],
+    stats: [ { label: "Students", value: "250" }, { label: "Faculty", value: "10" }, { label: "Labs", value: "4" } ],
     notices: [
       { id: 1, title: 'Formula SAE Team Selection', date: 'Sep 10, 2026', type: 'event', content: 'Auditions for the university racing team are open!' }
     ],
@@ -146,7 +146,7 @@ export const DEPARTMENTS_DATA = {
     code: "ICE",
     image: "https://images.unsplash.com/photo-1580894894513-541e068a3e2b?auto=format&fit=crop&q=80&w=1200",
     description: "Mastering the control systems that power industrial automation.",
-    stats: [ { label: "Students", value: "120" }, { label: "Faculty", value: "12" }, { label: "Labs", value: "4" } ],
+    stats: [ { label: "Students", value: "120" }, { label: "Faculty", value: "10" }, { label: "Labs", value: "4" } ],
     notices: [
       { id: 1, title: 'PLC Programming Certification', date: 'Dec 01, 2026', type: 'general', content: 'Register for the upcoming Siemens PLC certification course.' }
     ],
@@ -168,7 +168,7 @@ export const DEPARTMENTS_DATA = {
     code: "ECE",
     image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1200",
     description: "Connecting the world through microelectronics and communication networks.",
-    stats: [ { label: "Students", value: "300" }, { label: "Faculty", value: "25" }, { label: "Labs", value: "7" } ],
+    stats: [ { label: "Students", value: "300" }, { label: "Faculty", value: "10" }, { label: "Labs", value: "4" } ],
     notices: [
       { id: 1, title: 'VLSI Design Mini-Project Submissions', date: 'Oct 30, 2026', type: 'important', content: 'Submit your completed VLSI chip layout designs by Oct 30.' }
     ],
@@ -190,7 +190,7 @@ export const DEPARTMENTS_DATA = {
     code: "EEE",
     image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&q=80&w=1200",
     description: "Powering the future with renewable energy and high-voltage engineering.",
-    stats: [ { label: "Students", value: "220" }, { label: "Faculty", value: "18" }, { label: "Labs", value: "6" } ],
+    stats: [ { label: "Students", value: "220" }, { label: "Faculty", value: "10" }, { label: "Labs", value: "4" } ],
     notices: [
       { id: 1, title: 'Substation Visit', date: 'Nov 12, 2026', type: 'event', content: 'Industrial visit to the 220kV transmission substation scheduled.' }
     ],

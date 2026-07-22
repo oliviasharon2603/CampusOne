@@ -1,48 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, Image as ImageIcon, Send, MessageSquare, AlertTriangle, CheckCircle2, X, MapPin, Clock, Camera } from 'lucide-react';
 import Button from '../components/ui/Button';
 
-// Mock Data for the Feed
-const INITIAL_POSTS = [
-  {
-    id: 1,
-    type: 'FOUND',
-    author: { name: 'Rahul Sharma', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80' },
-    timestamp: '2 hours ago',
-    location: 'Near Main Library Entrance',
-    description: 'Found a blue Milton water bottle on the bench outside the library. I handed it over to the library front desk security guard.',
-    image: 'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&w=600&q=80', // water bottle
-    replies: [
-      { id: 101, author: 'Priya Patel', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80', text: 'That looks like Amit\'s bottle. Let me text him.', timestamp: '1 hour ago' },
-      { id: 102, author: 'Amit Kumar', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80', text: 'Yes, that is mine! I have a matching one here is a pic.', image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=400&q=80', timestamp: '45 mins ago' }
-    ]
-  },
-  {
-    id: 2,
-    type: 'LOST',
-    author: { name: 'Sneha Reddy', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80' },
-    timestamp: '5 hours ago',
-    location: 'CSE Block / Lab 3',
-    description: 'I lost my boAt wireless earbuds (black case) somewhere between the CSE block and the cafeteria around 11 AM today. Please let me know if anyone finds them!',
-    image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?auto=format&fit=crop&w=600&q=80', // earbuds
-    replies: []
-  },
-  {
-    id: 3,
-    type: 'FOUND',
-    author: { name: 'Campus Security', avatar: 'https://ui-avatars.com/api/?name=Campus+Security&background=0D8ABC&color=fff' },
-    timestamp: '1 day ago',
-    location: 'Main Gate Security Office',
-    description: 'A set of bike keys (Yamaha) with a red keychain was found in the parking lot. Claim it at the main gate security office with valid ID.',
-    image: 'https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=600&q=80', // keys
-    replies: [
-      { id: 103, author: 'Karthik R.', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80', text: 'Are there 3 keys on the ring?', timestamp: '20 hours ago' }
-    ]
-  }
-];
-
 const LostFoundPage = () => {
-  const [posts, setPosts] = useState(INITIAL_POSTS);
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Composer State
   const [postType, setPostType] = useState('LOST');
@@ -52,16 +14,31 @@ const LostFoundPage = () => {
   const [previewUrl, setPreviewUrl] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Reply State (tracks which post has the reply box open, and the text)
-  const [replyingTo, setReplyingTo] = useState(null); // Post ID
+  // Reply State
+  const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
 
-  // Handle local image upload via file input
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/v1/lost-found');
+        const data = await res.json();
+        if (data.success) {
+          setPosts(data.data);
+        }
+      } catch (err) {
+        console.error('Error fetching lost and found posts:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedImage(file);
-      // Create a local object URL to preview the image instantly without a backend
       setPreviewUrl(URL.createObjectURL(file));
     }
   };
@@ -83,13 +60,11 @@ const LostFoundPage = () => {
       timestamp: 'Just now',
       location: location || 'Campus',
       description: description,
-      image: previewUrl, // This points to the local blob URL
+      image: previewUrl,
       replies: []
     };
 
     setPosts([newPost, ...posts]);
-    
-    // Reset form
     setDescription('');
     setLocation('');
     clearImage();
@@ -225,9 +200,9 @@ const LostFoundPage = () => {
       </div>
 
       {/* The Conversation Feed */}
-      <div className="space-y-6">
+      <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6 [&>div]:break-inside-avoid">
         {posts.map(post => (
-          <div key={post.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div key={post.id} className="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
             <div className="p-6">
               
               {/* Post Header */}

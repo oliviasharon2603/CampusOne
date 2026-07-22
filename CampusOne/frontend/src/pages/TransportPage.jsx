@@ -3,96 +3,55 @@ import { BusFront, Map, CreditCard, MapPin, Clock, Navigation, CheckCircle2, QrC
 import Button from '../components/ui/Button';
 import { useUserActivity } from '../context/UserActivityContext';
 
-// Trichy Bus Routes Mock Data
-const TRICHY_ROUTES = [
-  {
-    id: "route-1",
-    name: "Chatram Bus Stand",
-    busNo: "TN-45-AT-1001",
-    driver: "Murugan K.",
-    contact: "+91 98765 43210",
-    departure: "07:30 AM",
-    arrival: "08:45 AM",
-    status: "On Time",
-    theme: "bg-primary-50 text-primary-600 border-primary-200",
-    stops: [
-      { name: "Chatram Bus Stand", time: "07:30 AM" },
-      { name: "Main Guard Gate", time: "07:40 AM" },
-      { name: "TVS Tolgate", time: "08:00 AM" },
-      { name: "Subramaniapuram", time: "08:15 AM" },
-      { name: "CampusOne Main Gate", time: "08:45 AM" }
-    ]
-  },
-  {
-    id: "route-2",
-    name: "Central Bus Stand",
-    busNo: "TN-45-AT-2045",
-    driver: "Ramesh P.",
-    contact: "+91 98765 43211",
-    departure: "07:45 AM",
-    arrival: "08:40 AM",
-    status: "Delayed",
-    theme: "bg-secondary-50 text-secondary-600 border-secondary-200",
-    stops: [
-      { name: "Central Bus Stand", time: "07:45 AM" },
-      { name: "Cantonment", time: "07:55 AM" },
-      { name: "Pudukkottai Road", time: "08:10 AM" },
-      { name: "Mathur", time: "08:25 AM" },
-      { name: "CampusOne Main Gate", time: "08:40 AM" }
-    ]
-  },
-  {
-    id: "route-3",
-    name: "Srirangam",
-    busNo: "TN-45-AT-3088",
-    driver: "Selvam M.",
-    contact: "+91 98765 43212",
-    departure: "07:15 AM",
-    arrival: "08:45 AM",
-    status: "On Time",
-    theme: "bg-accent-50 text-accent-600 border-accent-200",
-    stops: [
-      { name: "Srirangam Temple", time: "07:15 AM" },
-      { name: "Thiruvanaikoil", time: "07:25 AM" },
-      { name: "Tollgate", time: "07:40 AM" },
-      { name: "Palpannai", time: "08:05 AM" },
-      { name: "CampusOne Main Gate", time: "08:45 AM" }
-    ]
-  },
-  {
-    id: "route-4",
-    name: "Thillai Nagar",
-    busNo: "TN-45-AT-4412",
-    driver: "Karthik R.",
-    contact: "+91 98765 43213",
-    departure: "07:50 AM",
-    arrival: "08:50 AM",
-    status: "On Time",
-    theme: "bg-success-50 text-success-600 border-success-200",
-    stops: [
-      { name: "Thillai Nagar Main", time: "07:50 AM" },
-      { name: "Woraiyur", time: "08:00 AM" },
-      { name: "Puthur", time: "08:15 AM" },
-      { name: "Edamalaipatti Pudur", time: "08:30 AM" },
-      { name: "CampusOne Main Gate", time: "08:50 AM" }
-    ]
-  }
-];
-
 const TransportPage = () => {
+  const [routesData, setRoutesData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('routes');
   
-  // Routes State
   const [selectedRoute, setSelectedRoute] = useState(null);
+  const [trackingRoute, setTrackingRoute] = useState(null);
   
-  // Tracking State
-  const [trackingRoute, setTrackingRoute] = useState(TRICHY_ROUTES[0]);
-  
-  // Pass State
   const { transportPass, applyForPass } = useUserActivity();
-  const [isApplying, setIsApplying] = useState(false);
-  const [passForm, setPassForm] = useState({ routeId: TRICHY_ROUTES[0].id, term: 'Annual' });
+  const [passForm, setPassForm] = useState({ routeId: null, term: 'Annual' });
   const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/v1/transport');
+        const data = await res.json();
+        if (data.success) {
+          const formatted = data.data.map((r, index) => ({
+            id: r.id,
+            name: r.name,
+            busNo: r.bus_no,
+            driver: r.driver_name,
+            contact: r.contact_number,
+            departure: r.departure_time,
+            arrival: r.arrival_time,
+            status: index % 2 === 0 ? "On Time" : "Delayed",
+            theme: index % 2 === 0 ? "bg-primary-50 text-primary-600 border-primary-200" : "bg-secondary-50 text-secondary-600 border-secondary-200",
+            stops: [
+              { name: r.name, time: r.departure_time },
+              { name: "City Center", time: "07:50 AM" },
+              { name: "Highway Bypass", time: "08:15 AM" },
+              { name: "CampusOne Main Gate", time: r.arrival_time }
+            ]
+          }));
+          setRoutesData(formatted);
+          if (formatted.length > 0) {
+            setTrackingRoute(formatted[0]);
+            setPassForm({ routeId: formatted[0].id, term: 'Annual' });
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching transport routes:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchRoutes();
+  }, []);
 
   const showToast = (message) => {
     setToast(message);
@@ -101,7 +60,7 @@ const TransportPage = () => {
 
   const handleApplyPass = (e) => {
     e.preventDefault();
-    const route = TRICHY_ROUTES.find(r => r.id === passForm.routeId);
+    const route = routesData.find(r => r.id === passForm.routeId);
     
     // Create pass payload
     const newPass = {
@@ -196,7 +155,7 @@ const TransportPage = () => {
         {/* ROUTES & SCHEDULE TAB */}
         {activeTab === 'routes' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 animate-in slide-in-from-bottom-2 fade-in duration-300">
-            {TRICHY_ROUTES.map(route => (
+            {routesData.map(route => (
               <div key={route.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col group">
                 <div className={`p-4 border-b ${route.theme}`}>
                   <div className="flex justify-between items-start mb-2">
@@ -312,7 +271,7 @@ const TransportPage = () => {
                       value={passForm.routeId}
                       onChange={(e) => setPassForm({...passForm, routeId: e.target.value})}
                     >
-                      {TRICHY_ROUTES.map(route => (
+                      {routesData.map(route => (
                         <option key={route.id} value={route.id}>{route.name} Route (via {route.stops[1].name})</option>
                       ))}
                     </select>
@@ -351,7 +310,7 @@ const TransportPage = () => {
         )}
 
         {/* LIVE TRACKING TAB */}
-        {activeTab === 'tracking' && (
+        {activeTab === 'tracking' && trackingRoute && (
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-300">
             <div className="flex flex-col lg:flex-row h-[600px]">
               
@@ -366,9 +325,9 @@ const TransportPage = () => {
                   <select 
                     className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                     value={trackingRoute.id}
-                    onChange={(e) => setTrackingRoute(TRICHY_ROUTES.find(r => r.id === e.target.value))}
+                    onChange={(e) => setTrackingRoute(routesData.find(r => r.id === e.target.value))}
                   >
-                    {TRICHY_ROUTES.map(route => (
+                    {routesData.map(route => (
                       <option key={route.id} value={route.id}>{route.name}</option>
                     ))}
                   </select>
@@ -411,7 +370,7 @@ const TransportPage = () => {
               {/* Accurate Map iframe */}
               <div className="flex-1 relative bg-gray-200 hidden sm:block overflow-hidden">
                 <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d125439.11054705051!2d78.61899175!3d10.81583625!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baaf50ff2aec587%3A0x1121156d11e860bc!2sTiruchirappalli%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1715000000000!5m2!1sen!2sin"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.689689582531!2d78.68307281480068!3d10.758410292333465!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baaf5c120a1c6bb%3A0xc6a82704e6c1df24!2sPanjappur%2C%20Tiruchirappalli%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1715000000000!5m2!1sen!2sin"
                   width="100%" 
                   height="100%" 
                   style={{ border: 0 }} 

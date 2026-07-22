@@ -11,16 +11,78 @@ const DepartmentDetail = () => {
   const [selectedNotice, setSelectedNotice] = useState(null);
   const [selectedLab, setSelectedLab] = useState(null);
 
-  // Validate department
-  const deptData = DEPARTMENTS_DATA[deptId];
+  // Local fallback data for images, notices, stats, resources
+  const localData = DEPARTMENTS_DATA[deptId];
+
+  const [deptData, setDeptData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!deptData) {
+    if (!localData) {
       navigate('/departments');
+      return;
     }
-  }, [deptData, navigate]);
+    const fetchData = async () => {
+      try {
+        const deptCode = deptId.toUpperCase();
+        // 1. Fetch departments to find the ID
+        const deptRes = await fetch('http://localhost:5000/api/v1/departments');
+        const deptJson = await deptRes.json();
+        const dbDept = deptJson.data.find(d => d.code === deptCode);
+        
+        if (!dbDept) throw new Error('Department not found in DB');
 
-  if (!deptData) return null;
+        // 2. Fetch faculty and labs
+        const facRes = await fetch(`http://localhost:5000/api/v1/departments/${dbDept.id}/faculty`);
+        const facJson = await facRes.json();
+        
+        const labRes = await fetch(`http://localhost:5000/api/v1/departments/${dbDept.id}/labs`);
+        const labJson = await labRes.json();
+
+        // Map faculty fields
+        const mappedFaculty = facJson.data.map(f => ({
+          id: f.id,
+          name: f.name,
+          role: f.designation || 'Professor',
+          specialization: f.designation || 'General',
+          email: `${f.name.toLowerCase().replace(/[^a-z]/g, '')}@campusone.edu`,
+          phone: '+91 98765 43210',
+          image: f.photo_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200&h=200'
+        }));
+
+        // Map labs fields
+        const mappedLabs = labJson.data.map(l => ({
+          id: l.id,
+          name: l.name,
+          description: l.description,
+          image: l.image_url,
+          schedule: l.schedule || "Mon-Fri: 9:00 AM - 4:00 PM"
+        }));
+
+        setDeptData({
+          ...localData,
+          name: dbDept.name,
+          code: dbDept.code,
+          description: dbDept.description,
+          faculty: mappedFaculty,
+          labs: mappedLabs
+        });
+      } catch (err) {
+        console.error('Error fetching department data:', err);
+        // Fallback to local data completely if DB fails
+        setDeptData(localData);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, [deptId, localData, navigate]);
+
+  if (isLoading || !deptData) return (
+    <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+    </div>
+  );
 
   const handleDownload = (resource) => {
     // Generate text content on the fly
@@ -284,15 +346,14 @@ const DepartmentDetail = () => {
               <button onClick={() => setSelectedLab(null)} className="p-2 hover:bg-gray-200 rounded-full"><X className="w-5 h-5 text-gray-500" /></button>
             </div>
             <div className="p-6">
-              <div className="grid grid-cols-5 gap-2 text-center text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 border-b border-gray-100 pb-2">
-                <div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div>
+              <div className="bg-primary-50 text-primary-700 p-6 rounded-xl border border-primary-100 flex items-center justify-center text-center">
+                <div>
+                  <h3 className="font-bold text-lg mb-2">Active Schedule</h3>
+                  <p className="text-gray-700">{selectedLab.schedule}</p>
+                </div>
               </div>
-              <div className="grid grid-cols-5 gap-2 text-center h-48">
-                {Array.from({ length: 15 }).map((_, i) => (
-                  <div key={i} className={`rounded-lg p-2 border flex items-center justify-center text-[10px] sm:text-xs font-medium ${i % 4 === 0 ? 'bg-gray-50 text-gray-400 border-gray-100' : 'bg-primary-50 text-primary-700 border-primary-100'}`}>
-                    {i % 4 === 0 ? 'Maintenance' : `Batch ${String.fromCharCode(65 + (i % 3))} Practicals`}
-                  </div>
-                ))}
+              <div className="mt-6 text-sm text-gray-500 text-center">
+                * Note: Schedule is subject to change during exam periods and maintenance days.
               </div>
             </div>
           </div>
