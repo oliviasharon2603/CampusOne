@@ -12,12 +12,12 @@ const HeroSection = () => {
           <div className="lg:w-1/2 text-center lg:text-left">
 
             
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 leading-tight tracking-tight">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight tracking-tight">
               One Campus. <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Infinite Possibilities.</span>
             </h1>
             
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed">
+            <p className="text-xl text-gray-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0 mb-10 leading-relaxed">
               Experience the future of education at our premium campus in Trichy, Tamil Nadu. CampusOne centralizes every essential service into one intelligent, AI-powered platform to simplify your student journey.
             </p>
             
@@ -26,7 +26,7 @@ const HeroSection = () => {
                 Get Started
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
-              <a href="#explore" className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium rounded-full text-indigo-700 bg-indigo-100 hover:bg-indigo-200 transition-all">
+              <a href="#explore" className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium rounded-full text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/40 hover:bg-indigo-200 transition-all">
                 Explore Campus
               </a>
             </div>

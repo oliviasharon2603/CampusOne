@@ -45,7 +45,7 @@ const LibraryPage = () => {
           dept: b.category || 'General',
           available: b.available > 0,
           availabilityText: `${b.available} / ${b.total} Copies Available`,
-          cover: 'bg-primary-100 text-primary-600',
+          cover: 'bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400',
           image: b.cover,
           rack: b.rack,
           available_copies: b.available
@@ -180,7 +180,7 @@ const LibraryPage = () => {
           dept: b.category || 'General',
           available: b.available > 0,
           availabilityText: `${b.available} / ${b.total} Copies Available`,
-          cover: 'bg-primary-100 text-primary-600',
+          cover: 'bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400',
           image: b.cover,
           rack: b.rack
         })));
@@ -272,10 +272,10 @@ const LibraryPage = () => {
       {/* Toast Notification */}
       {toast && (
         <div className="fixed top-20 right-8 z-50 animate-in slide-in-from-top fade-in duration-300">
-          <div className="bg-white border border-accent-200 shadow-lg rounded-lg p-4 flex items-start space-x-3 max-w-sm">
+          <div className="bg-white dark:bg-slate-800 border border-accent-200 shadow-lg rounded-lg p-4 flex items-start space-x-3 max-w-sm">
             <CheckCircle2 className="w-5 h-5 text-accent-500 mt-0.5 flex-shrink-0" />
-            <p className="text-sm font-medium text-gray-800">{toast}</p>
-            <button onClick={() => setToast(null)} className="text-gray-400 hover:text-gray-600">
+            <p className="text-sm font-medium text-gray-800 dark:text-slate-200">{toast}</p>
+            <button onClick={() => setToast(null)} className="text-gray-400 dark:text-slate-300 hover:text-gray-600 dark:text-slate-300">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -283,22 +283,22 @@ const LibraryPage = () => {
       )}
 
       {/* Header & Search */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/50 p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-            <BookOpen className="w-6 h-6 mr-2 text-primary-600" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+            <BookOpen className="w-6 h-6 mr-2 text-primary-600 dark:text-primary-400" />
             AI Smart Library
           </h1>
-          <p className="text-gray-500 mt-1">Discover, borrow, and explore academic resources powered by AI.</p>
+          <p className="text-gray-500 dark:text-slate-300 mt-1">Discover, borrow, and explore academic resources powered by AI.</p>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-300 w-5 h-5" />
             <input 
               type="text"
               placeholder="Search books, authors, or subjects..."
-              className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow"
+              className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 transition-shadow"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -309,7 +309,7 @@ const LibraryPage = () => {
           <select 
             value={activeFilter}
             onChange={(e) => setActiveFilter(e.target.value)}
-            className="px-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium text-gray-700"
+            className="px-4 py-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium text-gray-700 dark:text-slate-300"
           >
             <option value="All">All Books</option>
             <option value="Available">Available Now</option>
@@ -326,7 +326,7 @@ const LibraryPage = () => {
       {/* AI Recommendations (Hide when searching) */}
       {!search && (
         <div>
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
             <Star className="w-5 h-5 mr-2 text-warning-500 fill-current" />
             Recommended for You
           </h2>
@@ -341,11 +341,11 @@ const LibraryPage = () => {
                   )}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-gray-900">{book.title}</h3>
+                  <h3 className="font-bold text-gray-900 dark:text-white">{book.title}</h3>
                   <p className="text-sm text-secondary-700 mt-1 font-medium">{book.reason}</p>
-                  <div className="flex items-center gap-3 mt-3 text-xs text-gray-500">
-                    <span className="bg-white px-2 py-1 rounded border border-gray-100">Level: {book.difficulty}</span>
-                    <span className="bg-white px-2 py-1 rounded border border-gray-100">{book.time} read</span>
+                  <div className="flex items-center gap-3 mt-3 text-xs text-gray-500 dark:text-slate-300">
+                    <span className="bg-white dark:bg-slate-800 px-2 py-1 rounded border border-gray-100 dark:border-slate-700/50">Level: {book.difficulty}</span>
+                    <span className="bg-white dark:bg-slate-800 px-2 py-1 rounded border border-gray-100 dark:border-slate-700/50">{book.time} read</span>
                   </div>
                 </div>
               </div>
@@ -356,21 +356,21 @@ const LibraryPage = () => {
 
       {/* Book Grid */}
       <div>
-        <h2 className="text-lg font-bold text-gray-900 mb-4">
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
           {search ? `Search Results (${filteredBooks.length})` : 'Library Catalog'}
         </h2>
         
         {filteredBooks.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-xl border border-gray-100">
+          <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700/50">
             <BookOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900">No books found matching your search.</h3>
-            <p className="text-gray-500 mt-1">Try adjusting your keywords or use the AI Search.</p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">No books found matching your search.</h3>
+            <p className="text-gray-500 dark:text-slate-300 mt-1">Try adjusting your keywords or use the AI Search.</p>
             <Button variant="outline" className="mt-4" onClick={() => setSearch('')}>Clear Search</Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredBooks.map(book => (
-              <div key={book.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+              <div key={book.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/50 overflow-hidden hover:shadow-md transition-shadow group">
                 <div className={`h-40 ${book.cover} flex items-center justify-center overflow-hidden relative`}>
                   {book.image ? (
                     <img src={book.image} alt={book.title} className="w-full h-full object-cover" />
@@ -380,17 +380,17 @@ const LibraryPage = () => {
                 </div>
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-1 rounded-full">{book.dept}</span>
+                    <span className="text-xs font-semibold text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded-full">{book.dept}</span>
                     {book.available ? (
                       <span className="flex items-center text-xs font-medium text-accent-600"><span className="w-2 h-2 rounded-full bg-accent-500 mr-1"></span>Available</span>
                     ) : (
-                      <span className="flex items-center text-xs font-medium text-gray-500"><span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>Issued</span>
+                      <span className="flex items-center text-xs font-medium text-gray-500 dark:text-slate-300"><span className="w-2 h-2 rounded-full bg-gray-400 mr-1"></span>Issued</span>
                     )}
                   </div>
-                  <h3 className="font-bold text-gray-900 line-clamp-1 group-hover:text-primary-600 transition-colors" title={book.title}>{book.title}</h3>
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-1">{book.author}</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white line-clamp-1 group-hover:text-primary-600 dark:text-primary-400 transition-colors" title={book.title}>{book.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-slate-300 mt-1 line-clamp-1">{book.author}</p>
                   <div className="flex items-center justify-between mt-4">
-                    <span className="text-xs text-gray-400 font-mono">Rack: {book.rack}</span>
+                    <span className="text-xs text-gray-400 dark:text-slate-300 font-mono">Rack: {book.rack}</span>
                     <Button size="small" variant={book.available ? 'primary' : 'outline'} onClick={() => setSelectedBook(book)}>
                       {book.available ? 'Borrow' : 'Details'}
                     </Button>
@@ -405,31 +405,31 @@ const LibraryPage = () => {
       {/* Borrow History and Requests */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
         {/* Borrow History */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-            <BookOpen className="w-5 h-5 mr-2 text-primary-600" />
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/50 p-6">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <BookOpen className="w-5 h-5 mr-2 text-primary-600 dark:text-primary-400" />
             My Borrow History
           </h2>
           <div className="space-y-4">
             {borrowHistory.length === 0 ? (
-              <p className="text-gray-500 text-sm">No borrow history found.</p>
+              <p className="text-gray-500 dark:text-slate-300 text-sm">No borrow history found.</p>
             ) : (
               borrowHistory.map(history => (
-                <div key={history.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:shadow-sm">
+                <div key={history.id} className="flex items-center justify-between p-3 border border-gray-100 dark:border-slate-700/50 rounded-lg hover:shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-12 bg-gray-100 rounded overflow-hidden">
-                      {history.book_cover ? <img src={history.book_cover} className="w-full h-full object-cover" /> : <Book className="w-5 h-5 m-2 text-gray-400" />}
+                    <div className="w-10 h-12 bg-gray-100 dark:bg-slate-700 rounded overflow-hidden">
+                      {history.book_cover ? <img src={history.book_cover} className="w-full h-full object-cover" /> : <Book className="w-5 h-5 m-2 text-gray-400 dark:text-slate-300" />}
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-900 text-sm">{history.book_title}</h4>
-                      <p className="text-xs text-gray-500">Borrowed: {new Date(history.borrowed_at).toLocaleDateString()}</p>
+                      <h4 className="font-bold text-gray-900 dark:text-white text-sm">{history.book_title}</h4>
+                      <p className="text-xs text-gray-500 dark:text-slate-300">Borrowed: {new Date(history.borrowed_at).toLocaleDateString()}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${history.status === 'returned' ? 'bg-success-50 text-success-700' : 'bg-warning-50 text-warning-700'}`}>
+                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${history.status === 'returned' ? 'bg-success-50 dark:bg-success-900/30 text-success-700 dark:text-success-300' : 'bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300'}`}>
                       {history.status.charAt(0).toUpperCase() + history.status.slice(1)}
                     </span>
-                    <button onClick={() => handleRemoveHistory(history.id)} className="text-gray-400 hover:text-danger-500 transition-colors" title="Remove">
+                    <button onClick={() => handleRemoveHistory(history.id)} className="text-gray-400 dark:text-slate-300 hover:text-danger-500 transition-colors" title="Remove">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -440,35 +440,35 @@ const LibraryPage = () => {
         </div>
 
         {/* Book Requests */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-            <Book className="w-5 h-5 mr-2 text-primary-600" />
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/50 p-6">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+            <Book className="w-5 h-5 mr-2 text-primary-600 dark:text-primary-400" />
             My Book Requests
           </h2>
           <div className="space-y-4">
             {bookRequests.length === 0 ? (
-              <p className="text-gray-500 text-sm">No active requests.</p>
+              <p className="text-gray-500 dark:text-slate-300 text-sm">No active requests.</p>
             ) : (
               bookRequests.map(req => (
-                <div key={req.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:shadow-sm">
+                <div key={req.id} className="flex items-center justify-between p-3 border border-gray-100 dark:border-slate-700/50 rounded-lg hover:shadow-sm">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-12 bg-gray-100 rounded overflow-hidden">
-                      {req.book_cover ? <img src={req.book_cover} className="w-full h-full object-cover" /> : <Book className="w-5 h-5 m-2 text-gray-400" />}
+                    <div className="w-10 h-12 bg-gray-100 dark:bg-slate-700 rounded overflow-hidden">
+                      {req.book_cover ? <img src={req.book_cover} className="w-full h-full object-cover" /> : <Book className="w-5 h-5 m-2 text-gray-400 dark:text-slate-300" />}
                     </div>
                     <div>
-                      <h4 className="font-bold text-gray-900 text-sm">{req.book_title}</h4>
-                      <p className="text-xs text-gray-500">Requested: {new Date(req.requested_at).toLocaleDateString()}</p>
+                      <h4 className="font-bold text-gray-900 dark:text-white text-sm">{req.book_title}</h4>
+                      <p className="text-xs text-gray-500 dark:text-slate-300">Requested: {new Date(req.requested_at).toLocaleDateString()}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                      req.status === 'pending' ? 'bg-warning-50 text-warning-700' :
-                      req.status === 'available' ? 'bg-success-50 text-success-700' :
-                      'bg-gray-100 text-gray-700'
+                      req.status === 'pending' ? 'bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300' :
+                      req.status === 'available' ? 'bg-success-50 dark:bg-success-900/30 text-success-700 dark:text-success-300' :
+                      'bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300'
                     }`}>
                       {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
                     </span>
-                    <button onClick={() => handleRemoveRequest(req.id)} className="text-gray-400 hover:text-danger-500 transition-colors" title="Cancel Request">
+                    <button onClick={() => handleRemoveRequest(req.id)} className="text-gray-400 dark:text-slate-300 hover:text-danger-500 transition-colors" title="Cancel Request">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -485,15 +485,15 @@ const LibraryPage = () => {
           {/* Glassmorphism Background Overlay */}
           <div className="absolute inset-0 bg-primary-900/10 backdrop-blur-[2px] transition-opacity" onClick={() => setSelectedBook(null)} />
           <div className="fixed inset-y-0 right-0 max-w-md w-full flex">
-            <div className="w-full h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-900">Book Details</h2>
-                <button onClick={() => setSelectedBook(null)} className="text-gray-400 hover:text-gray-500 focus:outline-none bg-gray-50 hover:bg-gray-100 p-2 rounded-full transition-colors">
+            <div className="w-full h-full bg-white dark:bg-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+              <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700/50 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Book Details</h2>
+                <button onClick={() => setSelectedBook(null)} className="text-gray-400 dark:text-slate-300 hover:text-gray-500 dark:text-slate-300 focus:outline-none bg-gray-50 dark:bg-slate-900 hover:bg-gray-100 dark:bg-slate-700 p-2 rounded-full transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-6">
-                <div className={`w-full h-64 ${selectedBook.cover || 'bg-primary-50 text-primary-300'} rounded-xl mb-6 flex items-center justify-center overflow-hidden relative shadow-inner`}>
+                <div className={`w-full h-64 ${selectedBook.cover || 'bg-primary-50 dark:bg-primary-900/30 text-primary-300'} rounded-xl mb-6 flex items-center justify-center overflow-hidden relative shadow-inner`}>
                   {selectedBook.image ? (
                     <img src={selectedBook.image} alt={selectedBook.title} className="w-full h-full object-cover" />
                   ) : (
@@ -501,34 +501,34 @@ const LibraryPage = () => {
                   )}
                 </div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-primary-700 bg-primary-50 px-2 py-1 rounded-full">{selectedBook.dept}</span>
+                  <span className="text-xs font-semibold text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-900/30 px-2 py-1 rounded-full">{selectedBook.dept}</span>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 leading-tight">{selectedBook.title}</h3>
-                <p className="text-lg text-gray-600 mt-1">{selectedBook.author}</p>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">{selectedBook.title}</h3>
+                <p className="text-lg text-gray-600 dark:text-slate-300 mt-1">{selectedBook.author}</p>
                 
                 <div className="mt-6 space-y-4">
-                  <div className="bg-gray-50 p-4 rounded-xl flex items-start space-x-3">
-                    <Info className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-gray-600 leading-relaxed">
+                  <div className="bg-gray-50 dark:bg-slate-900 p-4 rounded-xl flex items-start space-x-3">
+                    <Info className="w-5 h-5 text-gray-400 dark:text-slate-300 mt-0.5 flex-shrink-0" />
+                    <p className="text-sm text-gray-600 dark:text-slate-300 leading-relaxed">
                       This is an essential text covering fundamental concepts. It is highly recommended for current semester coursework.
                     </p>
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100 dark:border-slate-700/50">
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Availability</p>
-                      <p className={`font-medium mt-1 ${selectedBook.available ? 'text-accent-600' : 'text-gray-900'}`}>
+                      <p className="text-xs text-gray-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Availability</p>
+                      <p className={`font-medium mt-1 ${selectedBook.available ? 'text-accent-600' : 'text-gray-900 dark:text-white'}`}>
                         {selectedBook.available ? '3 Copies Available' : 'Currently Issued'}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Location</p>
-                      <p className="font-medium text-gray-900 mt-1 font-mono">{selectedBook.rack}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-300 uppercase tracking-wider font-semibold">Location</p>
+                      <p className="font-medium text-gray-900 dark:text-white mt-1 font-mono">{selectedBook.rack}</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
+              <div className="p-6 border-t border-gray-100 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-900 flex gap-3">
                 <Button 
                   className="flex-1" 
                   variant={selectedBook.available ? "primary" : "outline"} 
@@ -558,15 +558,15 @@ const LibraryPage = () => {
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-primary-900/10 backdrop-blur-[2px] transition-opacity" onClick={() => setShowConfirmModal(false)}></div>
-          <div className="bg-white rounded-xl shadow-xl max-w-sm w-full relative z-10 animate-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-sm w-full relative z-10 animate-in zoom-in-95 duration-200">
             <div className="p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center mx-auto mb-4">
+              <div className="w-12 h-12 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto mb-4">
                 <BookOpen className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
                 {selectedBook?.available ? 'Confirm Borrowing' : 'Request Book'}
               </h3>
-              <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm text-gray-500 dark:text-slate-300 mb-6">
                 {selectedBook?.available 
                   ? `Are you sure you want to borrow ${selectedBook?.title}? You will need to pick it up from rack ${selectedBook?.rack} within 24 hours.`
                   : `Are you sure you want to request ${selectedBook?.title}? You will be notified when the book is returned or procured.`
@@ -586,29 +586,29 @@ const LibraryPage = () => {
         <div className="fixed inset-0 z-40 overflow-hidden">
           <div className="absolute inset-0 bg-primary-900/10 backdrop-blur-[2px] transition-opacity" onClick={() => setShowWishlist(false)} />
           <div className="fixed inset-y-0 right-0 max-w-sm w-full flex">
-            <div className="w-full h-full bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
-              <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-900 flex items-center">
+            <div className="w-full h-full bg-white dark:bg-slate-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+              <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700/50 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
                   <Star className="w-5 h-5 mr-2 text-warning-500 fill-current" /> My Wishlist
                 </h2>
-                <button onClick={() => setShowWishlist(false)} className="text-gray-400 hover:text-gray-500 bg-gray-50 hover:bg-gray-100 p-2 rounded-full">
+                <button onClick={() => setShowWishlist(false)} className="text-gray-400 dark:text-slate-300 hover:text-gray-500 dark:text-slate-300 bg-gray-50 dark:bg-slate-900 hover:bg-gray-100 dark:bg-slate-700 p-2 rounded-full">
                   <X className="w-5 h-5" />
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 {wishlistIds.length === 0 ? (
-                  <p className="text-gray-500 text-center mt-10">Your wishlist is empty.</p>
+                  <p className="text-gray-500 dark:text-slate-300 text-center mt-10">Your wishlist is empty.</p>
                 ) : (
                   books.filter(b => wishlistIds.includes(b.id)).map(book => (
-                    <div key={book.id} className="flex gap-4 p-3 border border-gray-100 rounded-lg hover:shadow-sm cursor-pointer justify-between">
+                    <div key={book.id} className="flex gap-4 p-3 border border-gray-100 dark:border-slate-700/50 rounded-lg hover:shadow-sm cursor-pointer justify-between">
                       <div className="flex gap-4 flex-1" onClick={() => { setSelectedBook(book); setShowWishlist(false); }}>
-                        <div className="w-16 h-20 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
-                          {book.image ? <img src={book.image} className="w-full h-full object-cover" /> : <Book className="w-6 h-6 text-gray-400" />}
+                        <div className="w-16 h-20 bg-gray-100 dark:bg-slate-700 rounded flex items-center justify-center overflow-hidden">
+                          {book.image ? <img src={book.image} className="w-full h-full object-cover" /> : <Book className="w-6 h-6 text-gray-400 dark:text-slate-300" />}
                         </div>
                         <div>
-                          <h4 className="font-bold text-gray-900 line-clamp-1">{book.title}</h4>
-                          <p className="text-sm text-gray-500">{book.author}</p>
-                          <p className="text-xs text-primary-600 mt-2 font-mono">Rack: {book.rack}</p>
+                          <h4 className="font-bold text-gray-900 dark:text-white line-clamp-1">{book.title}</h4>
+                          <p className="text-sm text-gray-500 dark:text-slate-300">{book.author}</p>
+                          <p className="text-xs text-primary-600 dark:text-primary-400 mt-2 font-mono">Rack: {book.rack}</p>
                         </div>
                       </div>
                       <button 
@@ -624,7 +624,7 @@ const LibraryPage = () => {
                             }
                           });
                         }} 
-                        className="text-gray-400 hover:text-danger-500 transition-colors p-2" 
+                        className="text-gray-400 dark:text-slate-300 hover:text-danger-500 transition-colors p-2" 
                         title="Remove from Wishlist"
                       >
                         <X className="w-4 h-4" />

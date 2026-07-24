@@ -10,7 +10,7 @@ const DOC_TEMPLATES = [
     title: 'Leave of Absence Application',
     description: 'Request formal leave for medical, personal, or academic reasons.',
     icon: CalendarIcon,
-    theme: 'bg-primary-50 text-primary-600',
+    theme: 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400',
     fields: [
       { id: 'startDate', label: 'Start Date', type: 'date' },
       { id: 'endDate', label: 'End Date', type: 'date' },
@@ -32,7 +32,7 @@ const DOC_TEMPLATES = [
     title: 'No Objection Certificate (NOC)',
     description: 'Permission to attend external internships, workshops, or events.',
     icon: Briefcase,
-    theme: 'bg-warning-50 text-warning-600',
+    theme: 'bg-warning-50 dark:bg-warning-900/30 text-warning-600 dark:text-warning-400',
     fields: [
       { id: 'companyName', label: 'Company / Organization Name', type: 'text' },
       { id: 'duration', label: 'Duration (in weeks)', type: 'number' }
@@ -43,7 +43,7 @@ const DOC_TEMPLATES = [
     title: 'Character Certificate Request',
     description: 'Request conduct verification for higher education or jobs.',
     icon: Award,
-    theme: 'bg-success-50 text-success-600',
+    theme: 'bg-success-50 dark:bg-success-900/30 text-success-600 dark:text-success-400',
     fields: [
       { id: 'programApplied', label: 'Program/Job Applied For', type: 'text' }
     ]
@@ -185,14 +185,14 @@ const DocumentsPage = () => {
       )}
 
       {/* Header Section (Hidden during print) */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 relative print:hidden">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 flex items-center">
-          <div className="bg-primary-50 text-primary-600 p-2.5 rounded-xl mr-3 shadow-sm border border-primary-100">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 p-6 sm:p-8 relative print:hidden">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white flex items-center">
+          <div className="bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 p-2.5 rounded-xl mr-3 shadow-sm border border-primary-100 dark:border-primary-800">
             <FileText className="w-7 h-7" />
           </div>
           Official Documents
         </h1>
-        <p className="text-gray-600 mt-3 text-lg font-medium">Instantly generate, print, and download formally formatted college letters and certificates.</p>
+        <p className="text-gray-600 dark:text-slate-300 mt-3 text-lg font-medium">Instantly generate, print, and download formally formatted college letters and certificates.</p>
       </div>
 
       {!activeDoc ? (
@@ -201,14 +201,14 @@ const DocumentsPage = () => {
           {DOC_TEMPLATES.map(doc => {
             const Icon = doc.icon;
             return (
-              <div key={doc.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col hover:shadow-md transition-shadow">
+              <div key={doc.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 p-6 flex flex-col hover:shadow-md transition-shadow">
                 <div className="flex items-start mb-4">
                   <div className={`p-3 rounded-xl mr-4 ${doc.theme}`}>
                     <Icon className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900">{doc.title}</h3>
-                    <p className="text-gray-500 text-sm mt-1">{doc.description}</p>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">{doc.title}</h3>
+                    <p className="text-gray-500 dark:text-slate-300 text-sm mt-1">{doc.description}</p>
                   </div>
                 </div>
                 <div className="mt-auto pt-4 border-t border-gray-50">
@@ -222,28 +222,28 @@ const DocumentsPage = () => {
         </div>
       ) : !previewMode ? (
         /* Form View (Hidden during print) */
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 max-w-2xl mx-auto print:hidden">
-          <button onClick={() => setActiveDoc(null)} className="flex items-center text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 p-6 sm:p-8 max-w-2xl mx-auto print:hidden">
+          <button onClick={() => setActiveDoc(null)} className="flex items-center text-sm text-gray-500 dark:text-slate-300 hover:text-gray-900 dark:text-white mb-6 transition-colors">
             <ChevronLeft className="w-4 h-4 mr-1" /> Back to Catalog
           </button>
           
-          <div className="flex items-center mb-6 pb-6 border-b border-gray-100">
+          <div className="flex items-center mb-6 pb-6 border-b border-gray-100 dark:border-slate-700/50">
             <div className={`p-2 rounded-lg mr-3 ${activeDoc.theme}`}>
               <activeDoc.icon className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">{activeDoc.title}</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{activeDoc.title}</h2>
           </div>
           
           <form onSubmit={handleGenerate} className="space-y-5">
             {activeDoc.fields.map(field => (
               <div key={field.id}>
-                <label className="block text-sm font-bold text-gray-700 mb-1.5">{field.label}</label>
+                <label className="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-1.5">{field.label}</label>
                 {field.type === 'textarea' ? (
                   <textarea 
                     required
                     rows="4"
                     placeholder={field.placeholder}
-                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-shadow"
+                    className="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-shadow"
                     value={formData[field.id] || ''}
                     onChange={(e) => setFormData({...formData, [field.id]: e.target.value})}
                   ></textarea>
@@ -252,7 +252,7 @@ const DocumentsPage = () => {
                     type={field.type}
                     required
                     placeholder={field.placeholder}
-                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-shadow"
+                    className="w-full border border-gray-300 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-shadow"
                     value={formData[field.id] || ''}
                     onChange={(e) => setFormData({...formData, [field.id]: e.target.value})}
                   />
@@ -271,7 +271,7 @@ const DocumentsPage = () => {
           
           {/* Action Bar (Hidden during print) */}
           <div className="flex justify-between items-center mb-6 print:hidden">
-            <button onClick={() => setPreviewMode(false)} className="flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+            <button onClick={() => setPreviewMode(false)} className="flex items-center text-sm font-medium text-gray-500 dark:text-slate-300 hover:text-gray-900 dark:text-white transition-colors">
               <ChevronLeft className="w-4 h-4 mr-1" /> Edit Details
             </button>
             <div className="flex gap-3">
@@ -283,14 +283,14 @@ const DocumentsPage = () => {
           {/* The Printable Document */}
           <div 
             id="printable-document" 
-            className="bg-white p-10 sm:p-16 shadow-xl border border-gray-200 text-gray-900 print:shadow-none print:border-none print:p-0 min-h-[800px] text-[15px]"
+            className="bg-white dark:bg-slate-800 p-10 sm:p-16 shadow-xl border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white print:shadow-none print:border-none print:p-0 min-h-[800px] text-[15px]"
             style={{ fontFamily: '"Times New Roman", Times, serif' }}
           >
             {/* Letterhead */}
             <div className="border-b-2 border-gray-900 pb-6 mb-8 text-center">
-              <h1 className="text-3xl font-bold uppercase tracking-widest text-primary-900">CampusOne University</h1>
-              <p className="text-gray-600 mt-1">National Institute of Technology Campus, Tiruchirappalli, Tamil Nadu 620015</p>
-              <p className="text-gray-500 text-sm mt-0.5">Contact: +91 431 2503000 | Email: administration@campusone.edu.in</p>
+              <h1 className="text-3xl font-bold uppercase tracking-widest text-primary-900 dark:text-primary-100">CampusOne University</h1>
+              <p className="text-gray-600 dark:text-slate-300 mt-1">National Institute of Technology Campus, Tiruchirappalli, Tamil Nadu 620015</p>
+              <p className="text-gray-500 dark:text-slate-300 text-sm mt-0.5">Contact: +91 431 2503000 | Email: administration@campusone.edu.in</p>
             </div>
             
             {/* Date */}

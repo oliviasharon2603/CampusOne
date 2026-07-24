@@ -108,7 +108,7 @@ const Chatbot = ({ isOpen, onClose }) => {
           <a 
             key={i} 
             href={parts[i+1]} 
-            className="text-primary-600 underline font-bold hover:text-primary-700 transition-colors"
+            className="text-primary-600 dark:text-primary-400 underline font-bold hover:text-primary-700 dark:text-primary-300 transition-colors"
           >
             {parts[i]}
           </a>
@@ -131,12 +131,12 @@ const Chatbot = ({ isOpen, onClose }) => {
 
       {/* Side Panel */}
       <div 
-        className={`fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white dark:bg-slate-800 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         {/* Header */}
-        <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-primary-600 to-secondary-600 flex justify-between items-center text-white shrink-0">
+        <div className="p-4 border-b border-gray-100 dark:border-slate-700/50 bg-gradient-to-r from-primary-600 to-secondary-600 flex justify-between items-center text-white shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-md">
+            <div className="w-10 h-10 bg-white/20 dark:bg-slate-800/20 rounded-full flex items-center justify-center backdrop-blur-md">
               <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -148,25 +148,25 @@ const Chatbot = ({ isOpen, onClose }) => {
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-white/20 rounded-full transition-colors"
+            className="p-2 hover:bg-white/20 dark:bg-slate-800/20 rounded-full transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 dark:bg-slate-900/50">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`flex max-w-[85%] gap-2 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center ${msg.role === 'user' ? 'bg-primary-100 text-primary-700' : 'bg-secondary-100 text-secondary-700'}`}>
+                <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center ${msg.role === 'user' ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300' : 'bg-secondary-100 text-secondary-700'}`}>
                   {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                 </div>
                 <div 
                   className={`p-3 rounded-2xl text-sm shadow-sm ${
                     msg.role === 'user' 
                       ? 'bg-primary-600 text-white rounded-tr-sm' 
-                      : 'bg-white border border-gray-100 text-gray-800 rounded-tl-sm'
+                      : 'bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/50 text-gray-800 dark:text-slate-200 rounded-tl-sm'
                   }`}
                   style={{ whiteSpace: 'pre-wrap' }}
                 >
@@ -181,9 +181,9 @@ const Chatbot = ({ isOpen, onClose }) => {
                 <div className="w-8 h-8 shrink-0 rounded-full bg-secondary-100 text-secondary-700 flex items-center justify-center">
                   <Bot className="w-4 h-4" />
                 </div>
-                <div className="p-3 rounded-2xl bg-white border border-gray-100 flex items-center gap-2 rounded-tl-sm">
+                <div className="p-3 rounded-2xl bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/50 flex items-center gap-2 rounded-tl-sm">
                   <Loader2 className="w-4 h-4 animate-spin text-secondary-500" />
-                  <span className="text-xs text-gray-500 font-medium">Thinking...</span>
+                  <span className="text-xs text-gray-500 dark:text-slate-300 font-medium">Thinking...</span>
                 </div>
               </div>
             </div>
@@ -192,14 +192,14 @@ const Chatbot = ({ isOpen, onClose }) => {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 bg-white border-t border-gray-100 shrink-0">
+        <div className="p-4 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700/50 shrink-0">
           <form onSubmit={handleSend} className="flex gap-2">
             <input 
               type="text" 
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask anything about CampusOne..."
-              className="flex-1 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all shadow-sm"
+              className="flex-1 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-gray-900 dark:text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all shadow-sm"
               disabled={isLoading}
             />
             <button 
@@ -211,7 +211,7 @@ const Chatbot = ({ isOpen, onClose }) => {
             </button>
           </form>
           <div className="text-center mt-2">
-            <span className="text-[10px] text-gray-400 font-medium uppercase tracking-widest">Powered by Gemini AI</span>
+            <span className="text-[10px] text-gray-400 dark:text-slate-300 font-medium uppercase tracking-widest">Powered by Gemini AI</span>
           </div>
         </div>
       </div>

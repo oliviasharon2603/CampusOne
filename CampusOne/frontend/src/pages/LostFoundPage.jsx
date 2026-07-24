@@ -96,29 +96,29 @@ const LostFoundPage = () => {
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-300 pb-10">
       
       {/* Header Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 overflow-hidden relative">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 p-6 sm:p-8 overflow-hidden relative">
         <div className="relative z-10">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 flex items-center">
-            <div className="bg-primary-50 text-primary-600 p-2.5 rounded-xl mr-3 shadow-sm border border-primary-100">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white flex items-center">
+            <div className="bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 p-2.5 rounded-xl mr-3 shadow-sm border border-primary-100 dark:border-primary-800">
               <Search className="w-7 h-7" />
             </div>
             Lost & Found
           </h1>
-          <p className="text-gray-500 mt-3 text-lg">Report lost items or post things you've found on campus. Help your fellow students recover their belongings!</p>
+          <p className="text-gray-500 dark:text-slate-300 mt-3 text-lg">Report lost items or post things you've found on campus. Help your fellow students recover their belongings!</p>
         </div>
       </div>
 
       {/* The Composer */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-          <h2 className="font-bold text-gray-900">Create a New Post</h2>
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 overflow-hidden">
+        <div className="p-4 border-b border-gray-100 dark:border-slate-700/50 flex items-center justify-between bg-gray-50 dark:bg-slate-900/50">
+          <h2 className="font-bold text-gray-900 dark:text-white">Create a New Post</h2>
           
           {/* Post Type Toggle */}
-          <div className="flex bg-white rounded-lg border border-gray-200 shadow-sm p-1">
+          <div className="flex bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700 shadow-sm p-1">
             <button
               onClick={() => setPostType('LOST')}
               className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-colors ${
-                postType === 'LOST' ? 'bg-danger-500 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'
+                postType === 'LOST' ? 'bg-danger-500 text-white shadow-sm' : 'text-gray-500 dark:text-slate-300 hover:bg-gray-50 dark:bg-slate-900'
               }`}
             >
               I Lost Something
@@ -126,7 +126,7 @@ const LostFoundPage = () => {
             <button
               onClick={() => setPostType('FOUND')}
               className={`px-4 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-colors ${
-                postType === 'FOUND' ? 'bg-success-500 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50'
+                postType === 'FOUND' ? 'bg-success-500 text-white shadow-sm' : 'text-gray-500 dark:text-slate-300 hover:bg-gray-50 dark:bg-slate-900'
               }`}
             >
               I Found Something
@@ -139,7 +139,7 @@ const LostFoundPage = () => {
             <div>
               <textarea 
                 placeholder={`Describe what you ${postType === 'LOST' ? 'lost' : 'found'}...`}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:bg-white transition-all resize-none min-h-[120px]"
+                className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-4 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:bg-white dark:bg-slate-800 transition-all resize-none min-h-[120px]"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
@@ -148,11 +148,11 @@ const LostFoundPage = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
               <div className="flex-1 relative w-full">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-300 w-4 h-4" />
                 <input 
                   type="text" 
                   placeholder={`Where was it ${postType === 'LOST' ? 'last seen' : 'found'}?`}
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 transition-shadow"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 transition-shadow"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                 />
@@ -181,7 +181,7 @@ const LostFoundPage = () => {
             {/* Image Preview */}
             {previewUrl && (
               <div className="relative mt-4 inline-block">
-                <img src={previewUrl} alt="Preview" className="h-32 rounded-xl object-cover border border-gray-200 shadow-sm" />
+                <img src={previewUrl} alt="Preview" className="h-32 rounded-xl object-cover border border-gray-200 dark:border-slate-700 shadow-sm" />
                 <button 
                   type="button"
                   onClick={clearImage}
@@ -193,7 +193,7 @@ const LostFoundPage = () => {
             )}
           </div>
           
-          <div className="pt-6 mt-6 border-t border-gray-100 flex justify-end">
+          <div className="pt-6 mt-6 border-t border-gray-100 dark:border-slate-700/50 flex justify-end">
             <Button type="submit" variant="primary" icon={Send}>Post to Feed</Button>
           </div>
         </form>
@@ -202,16 +202,16 @@ const LostFoundPage = () => {
       {/* The Conversation Feed */}
       <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6 [&>div]:break-inside-avoid">
         {posts.map(post => (
-          <div key={post.id} className="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+          <div key={post.id} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 overflow-hidden hover:shadow-md transition-shadow">
             <div className="p-6">
               
               {/* Post Header */}
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
-                  <img src={post.author.avatar} alt={post.author.name} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+                  <img src={post.author.avatar} alt={post.author.name} className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-slate-700" />
                   <div>
-                    <h3 className="font-bold text-gray-900">{post.author.name}</h3>
-                    <div className="flex items-center text-xs text-gray-500 mt-0.5">
+                    <h3 className="font-bold text-gray-900 dark:text-white">{post.author.name}</h3>
+                    <div className="flex items-center text-xs text-gray-500 dark:text-slate-300 mt-0.5">
                       <Clock className="w-3 h-3 mr-1" /> {post.timestamp}
                       <span className="mx-2">•</span>
                       <MapPin className="w-3 h-3 mr-1" /> {post.location}
@@ -219,7 +219,7 @@ const LostFoundPage = () => {
                   </div>
                 </div>
                 <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center ${
-                  post.type === 'LOST' ? 'bg-danger-50 text-danger-600 border border-danger-100' : 'bg-success-50 text-success-600 border border-success-100'
+                  post.type === 'LOST' ? 'bg-danger-50 dark:bg-danger-900/30 text-danger-600 dark:text-danger-400 border border-danger-100 dark:border-danger-800' : 'bg-success-50 dark:bg-success-900/30 text-success-600 dark:text-success-400 border border-success-100'
                 }`}>
                   {post.type === 'LOST' ? <AlertTriangle className="w-3.5 h-3.5 mr-1" /> : <CheckCircle2 className="w-3.5 h-3.5 mr-1" />}
                   {post.type}
@@ -227,10 +227,10 @@ const LostFoundPage = () => {
               </div>
 
               {/* Post Content */}
-              <p className="text-gray-800 leading-relaxed mb-4">{post.description}</p>
+              <p className="text-gray-800 dark:text-slate-200 leading-relaxed mb-4">{post.description}</p>
               
               {post.image && (
-                <div className="mb-4 rounded-xl overflow-hidden border border-gray-100">
+                <div className="mb-4 rounded-xl overflow-hidden border border-gray-100 dark:border-slate-700/50">
                   <img src={post.image} alt="Attachment" className="w-full max-h-96 object-cover" />
                 </div>
               )}
@@ -239,7 +239,7 @@ const LostFoundPage = () => {
               <div className="flex gap-4 pt-4 border-t border-gray-50">
                 <button 
                   onClick={() => setReplyingTo(replyingTo === post.id ? null : post.id)}
-                  className="flex items-center text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors bg-gray-50 hover:bg-primary-50 px-3 py-1.5 rounded-lg"
+                  className="flex items-center text-sm font-medium text-gray-500 dark:text-slate-300 hover:text-primary-600 dark:text-primary-400 transition-colors bg-gray-50 dark:bg-slate-900 hover:bg-primary-50 dark:bg-primary-900/30 px-3 py-1.5 rounded-lg"
                 >
                   <MessageSquare className="w-4 h-4 mr-2" /> 
                   {post.replies.length > 0 ? `${post.replies.length} Replies` : 'Reply'}
@@ -250,20 +250,20 @@ const LostFoundPage = () => {
 
             {/* Conversation Thread (Replies) */}
             {(post.replies.length > 0 || replyingTo === post.id) && (
-              <div className="bg-gray-50/80 p-6 border-t border-gray-100">
+              <div className="bg-gray-50 dark:bg-slate-900/80 p-6 border-t border-gray-100 dark:border-slate-700/50">
                 
                 {/* Existing Replies */}
                 {post.replies.length > 0 && (
                   <div className="space-y-5 mb-6">
                     {post.replies.map(reply => (
                       <div key={reply.id} className="flex gap-3">
-                        <img src={reply.avatar} alt={reply.author} className="w-8 h-8 rounded-full object-cover border border-gray-200 mt-1" />
-                        <div className="flex-1 bg-white p-3 rounded-2xl rounded-tl-none border border-gray-100 shadow-sm">
+                        <img src={reply.avatar} alt={reply.author} className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-slate-700 mt-1" />
+                        <div className="flex-1 bg-white dark:bg-slate-800 p-3 rounded-2xl rounded-tl-none border border-gray-100 dark:border-slate-700/50 shadow-sm">
                           <div className="flex justify-between items-baseline mb-1">
-                            <span className="font-bold text-gray-900 text-sm">{reply.author}</span>
-                            <span className="text-xs text-gray-400">{reply.timestamp}</span>
+                            <span className="font-bold text-gray-900 dark:text-white text-sm">{reply.author}</span>
+                            <span className="text-xs text-gray-400 dark:text-slate-300">{reply.timestamp}</span>
                           </div>
-                          <p className="text-gray-700 text-sm">{reply.text}</p>
+                          <p className="text-gray-700 dark:text-slate-300 text-sm">{reply.text}</p>
                           {reply.image && (
                             <div className="mt-3 rounded-lg overflow-hidden border border-black/5 shadow-sm max-w-sm">
                               <img src={reply.image} alt="Reply Attachment" className="w-full h-auto object-cover" />
@@ -278,12 +278,12 @@ const LostFoundPage = () => {
                 {/* Reply Input Box */}
                 {replyingTo === post.id && (
                   <div className="flex gap-3">
-                    <img src="https://ui-avatars.com/api/?name=Current+User&background=6366f1&color=fff" alt="You" className="w-8 h-8 rounded-full border border-gray-200 mt-1" />
+                    <img src="https://ui-avatars.com/api/?name=Current+User&background=6366f1&color=fff" alt="You" className="w-8 h-8 rounded-full border border-gray-200 dark:border-slate-700 mt-1" />
                     <div className="flex-1 flex gap-2">
                       <input 
                         type="text" 
                         placeholder="Write a reply..."
-                        className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="flex-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleReplySubmit(post.id)}

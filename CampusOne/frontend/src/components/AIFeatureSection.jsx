@@ -46,7 +46,7 @@ const AIFeatureSection = () => {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Campus Assistant.</span>
             </h2>
             
-            <p className="text-xl text-gray-400 mb-10 leading-relaxed">
+            <p className="text-xl text-gray-400 dark:text-slate-300 mb-10 leading-relaxed">
               Meet the CampusOne AI. Need to find a library book? Want to know when the next bus leaves? Just ask. Our intelligent companion is available 24/7 to guide you through campus life.
             </p>
             
@@ -57,7 +57,7 @@ const AIFeatureSection = () => {
                 </div>
                 <div>
                   <h4 className="text-xl font-bold mb-1">Conversational UI</h4>
-                  <p className="text-gray-400">Chat naturally just like you would with a friend.</p>
+                  <p className="text-gray-400 dark:text-slate-300">Chat naturally just like you would with a friend.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -66,12 +66,12 @@ const AIFeatureSection = () => {
                 </div>
                 <div>
                   <h4 className="text-xl font-bold mb-1">Instant Actions</h4>
-                  <p className="text-gray-400">The AI can fetch real-time data, navigate modules, and assist you instantly.</p>
+                  <p className="text-gray-400 dark:text-slate-300">The AI can fetch real-time data, navigate modules, and assist you instantly.</p>
                 </div>
               </div>
             </div>
             
-            <Link to="/login" className="inline-flex items-center px-8 py-4 text-lg font-bold rounded-full text-gray-900 bg-white hover:bg-gray-100 transition-colors shadow-lg hover:shadow-white/20">
+            <Link to="/login" className="inline-flex items-center px-8 py-4 text-lg font-bold rounded-full text-gray-900 dark:text-white bg-white dark:bg-slate-800 hover:bg-gray-100 dark:bg-slate-700 transition-colors shadow-lg hover:shadow-white/20">
               Try the AI Assistant
             </Link>
           </div>

@@ -147,10 +147,10 @@ const EventsPage = () => {
       {/* Toast Notification */}
       {toast && (
         <div className="fixed top-20 right-8 z-50 animate-in slide-in-from-top fade-in duration-300">
-          <div className="bg-white border border-accent-200 shadow-lg rounded-lg p-4 flex items-start space-x-3 max-w-sm">
+          <div className="bg-white dark:bg-slate-800 border border-accent-200 shadow-lg rounded-lg p-4 flex items-start space-x-3 max-w-sm">
             <CheckCircle2 className="w-5 h-5 text-accent-500 mt-0.5 flex-shrink-0" />
-            <p className="text-sm font-medium text-gray-800">{toast}</p>
-            <button onClick={() => setToast(null)} className="text-gray-400 hover:text-gray-600">
+            <p className="text-sm font-medium text-gray-800 dark:text-slate-200">{toast}</p>
+            <button onClick={() => setToast(null)} className="text-gray-400 dark:text-slate-300 hover:text-gray-600 dark:text-slate-300">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -159,11 +159,11 @@ const EventsPage = () => {
 
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-          <Calendar className="w-6 h-6 mr-2 text-primary-600" />
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+          <Calendar className="w-6 h-6 mr-2 text-primary-600 dark:text-primary-400" />
           College Events
         </h1>
-        <p className="text-gray-500 mt-1">Discover and register for institution-wide events and activities.</p>
+        <p className="text-gray-500 dark:text-slate-300 mt-1">Discover and register for institution-wide events and activities.</p>
       </div>
 
       {/* Hero Banner (Upcoming Major Event) */}
@@ -174,17 +174,17 @@ const EventsPage = () => {
         
         <div className="relative z-20 p-8 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="max-w-2xl text-white">
-            <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-semibold tracking-wider uppercase mb-4">
+            <span className="inline-block px-3 py-1 bg-white/20 dark:bg-slate-800/20 backdrop-blur-sm rounded-full text-xs font-semibold tracking-wider uppercase mb-4">
               Upcoming Major Event
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold mb-4">{HERO_EVENT.title}</h2>
             <p className="text-gray-200 text-lg mb-6 leading-relaxed">{HERO_EVENT.description}</p>
             
             <div className="flex flex-wrap gap-4 mb-8 text-sm">
-              <div className="flex items-center bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm">
+              <div className="flex items-center bg-white/10 dark:bg-slate-800/10 px-4 py-2 rounded-lg backdrop-blur-sm">
                 <Calendar className="w-4 h-4 mr-2" /> {HERO_EVENT.date}
               </div>
-              <div className="flex items-center bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm">
+              <div className="flex items-center bg-white/10 dark:bg-slate-800/10 px-4 py-2 rounded-lg backdrop-blur-sm">
                 <MapPin className="w-4 h-4 mr-2" /> {HERO_EVENT.venue}
               </div>
             </div>
@@ -200,24 +200,24 @@ const EventsPage = () => {
           </div>
 
           {/* Countdown Timer */}
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-white min-w-[280px]">
+          <div className="bg-white/10 dark:bg-slate-800/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-white min-w-[280px]">
             <h3 className="text-sm font-medium text-gray-300 uppercase tracking-widest mb-4 text-center">Registration Closes In</h3>
             <div className="grid grid-cols-4 gap-4 text-center">
               <div className="flex flex-col">
                 <span className="text-3xl font-bold tabular-nums">{String(timeLeft.days).padStart(2, '0')}</span>
-                <span className="text-xs text-gray-400 mt-1">Days</span>
+                <span className="text-xs text-gray-400 dark:text-slate-300 mt-1">Days</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-3xl font-bold tabular-nums">{String(timeLeft.hours).padStart(2, '0')}</span>
-                <span className="text-xs text-gray-400 mt-1">Hours</span>
+                <span className="text-xs text-gray-400 dark:text-slate-300 mt-1">Hours</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-3xl font-bold tabular-nums">{String(timeLeft.minutes).padStart(2, '0')}</span>
-                <span className="text-xs text-gray-400 mt-1">Mins</span>
+                <span className="text-xs text-gray-400 dark:text-slate-300 mt-1">Mins</span>
               </div>
               <div className="flex flex-col">
                 <span className="text-3xl font-bold tabular-nums">{String(timeLeft.seconds).padStart(2, '0')}</span>
-                <span className="text-xs text-gray-400 mt-1">Secs</span>
+                <span className="text-xs text-gray-400 dark:text-slate-300 mt-1">Secs</span>
               </div>
             </div>
           </div>
@@ -230,8 +230,8 @@ const EventsPage = () => {
           <Sparkles className="w-6 h-6" />
         </div>
         <div>
-          <h3 className="font-bold text-gray-900">Recommended for You</h3>
-          <p className="text-sm text-gray-600 mt-1">Because you are in <span className="font-semibold text-secondary-700">AI&DS</span>, CampusOne AI suggests checking out the <strong>Web3 Builders Hackathon</strong> to boost your portfolio.</p>
+          <h3 className="font-bold text-gray-900 dark:text-white">Recommended for You</h3>
+          <p className="text-sm text-gray-600 dark:text-slate-300 mt-1">Because you are in <span className="font-semibold text-secondary-700">AI&DS</span>, CampusOne AI suggests checking out the <strong>Web3 Builders Hackathon</strong> to boost your portfolio.</p>
           <Button variant="outline" size="small" className="mt-3" onClick={handleViewHackathon}>View Hackathon</Button>
         </div>
       </div>
@@ -239,15 +239,15 @@ const EventsPage = () => {
       {/* Event Tabs & Filters */}
       <div id="events-grid" className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pt-4">
         {/* Tabs */}
-        <div className="flex p-1 bg-gray-100 rounded-lg">
+        <div className="flex p-1 bg-gray-100 dark:bg-slate-700 rounded-lg">
           {['current', 'upcoming', 'completed'].map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-2 rounded-md text-sm font-medium capitalize transition-all ${
                 activeTab === tab 
-                  ? 'bg-white text-primary-600 shadow-sm' 
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                  ? 'bg-white dark:bg-slate-800 text-primary-600 dark:text-primary-400 shadow-sm' 
+                  : 'text-gray-500 dark:text-slate-300 hover:text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:bg-slate-700'
               }`}
             >
               {tab}
@@ -257,7 +257,7 @@ const EventsPage = () => {
 
         {/* Categories */}
         <div className="flex items-center space-x-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
-          <Filter className="w-4 h-4 text-gray-400 mr-2 flex-shrink-0" />
+          <Filter className="w-4 h-4 text-gray-400 dark:text-slate-300 mr-2 flex-shrink-0" />
           {CATEGORIES.map(category => (
             <button
               key={category}
@@ -265,7 +265,7 @@ const EventsPage = () => {
               className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-colors border ${
                 activeCategory === category
                   ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:bg-slate-900'
               }`}
             >
               {category}
@@ -277,18 +277,18 @@ const EventsPage = () => {
       {/* Events Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredEvents.length === 0 ? (
-          <div className="col-span-full py-16 text-center bg-white border border-gray-100 rounded-xl shadow-sm">
+          <div className="col-span-full py-16 text-center bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700/50 rounded-xl shadow-sm">
             <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900">No events found.</h3>
-            <p className="text-gray-500 mt-1">There are no {activeTab} events matching your selected category.</p>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">No events found.</h3>
+            <p className="text-gray-500 dark:text-slate-300 mt-1">There are no {activeTab} events matching your selected category.</p>
             <Button variant="outline" className="mt-4" onClick={() => setActiveCategory('All')}>Clear Filters</Button>
           </div>
         ) : (
           filteredEvents.map(event => (
-            <div key={event.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all group flex flex-col">
+            <div key={event.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/50 overflow-hidden hover:shadow-md transition-all group flex flex-col">
               {/* Event Poster */}
               <div 
-                className="h-48 relative overflow-hidden flex items-center justify-center bg-gray-200"
+                className="h-48 relative overflow-hidden flex items-center justify-center bg-gray-200 dark:bg-slate-700"
                 style={{ 
                   backgroundImage: `url(${event.image})`,
                   backgroundSize: 'cover',
@@ -296,28 +296,28 @@ const EventsPage = () => {
                 }}
               >
                 <div className="absolute inset-0 bg-gray-900/40 group-hover:bg-gray-900/20 transition-colors"></div>
-                <div className="absolute top-4 left-4 bg-white/95 backdrop-blur shadow-sm px-3 py-1.5 rounded-lg text-xs font-bold text-gray-800">
+                <div className="absolute top-4 left-4 bg-white/95 dark:bg-slate-800/95 backdrop-blur shadow-sm px-3 py-1.5 rounded-lg text-xs font-bold text-gray-800 dark:text-slate-200">
                   {event.category}
                 </div>
               </div>
               
               <div className="p-5 flex flex-col flex-1">
-                <h3 className="font-bold text-gray-900 text-lg line-clamp-2 mb-3 group-hover:text-primary-600 transition-colors">{event.title}</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white text-lg line-clamp-2 mb-3 group-hover:text-primary-600 dark:text-primary-400 transition-colors">{event.title}</h3>
                 
                 <div className="space-y-2 mb-6">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Clock className="w-4 h-4 mr-2 text-gray-400" />
+                  <div className="flex items-center text-sm text-gray-500 dark:text-slate-300">
+                    <Clock className="w-4 h-4 mr-2 text-gray-400 dark:text-slate-300" />
                     {event.date} • {event.time}
                   </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                  <div className="flex items-center text-sm text-gray-500 dark:text-slate-300">
+                    <MapPin className="w-4 h-4 mr-2 text-gray-400 dark:text-slate-300" />
                     {event.venue}
                   </div>
                   {event.type !== 'completed' && (
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Users className="w-4 h-4 mr-2 text-gray-400" />
+                    <div className="flex items-center text-sm text-gray-500 dark:text-slate-300">
+                      <Users className="w-4 h-4 mr-2 text-gray-400 dark:text-slate-300" />
                       {event.seats > 0 ? (
-                        <span><strong className="text-gray-900">{event.seats}</strong> seats remaining</span>
+                        <span><strong className="text-gray-900 dark:text-white">{event.seats}</strong> seats remaining</span>
                       ) : (
                         <span className="text-danger-500 font-medium">House Full</span>
                       )}
@@ -325,7 +325,7 @@ const EventsPage = () => {
                   )}
                 </div>
 
-                <div className="mt-auto pt-4 border-t border-gray-100 flex gap-3">
+                <div className="mt-auto pt-4 border-t border-gray-100 dark:border-slate-700/50 flex gap-3">
                   {event.type !== 'completed' ? (
                     <Button 
                       variant={event.registered ? "outline" : "primary"}
@@ -350,38 +350,38 @@ const EventsPage = () => {
       {showConfirmModal && selectedEvent && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-primary-900/10 backdrop-blur-[2px] transition-opacity" onClick={() => setShowConfirmModal(false)}></div>
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full relative z-10 animate-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full relative z-10 animate-in zoom-in-95 duration-200">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-gray-900">Register for Event</h3>
-                <button onClick={() => setShowConfirmModal(false)} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5"/></button>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Register for Event</h3>
+                <button onClick={() => setShowConfirmModal(false)} className="text-gray-400 dark:text-slate-300 hover:text-gray-600 dark:text-slate-300"><X className="w-5 h-5"/></button>
               </div>
-              <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm text-gray-500 dark:text-slate-300 mb-6">
                 You are registering for <strong>{selectedEvent.title}</strong>. Please fill out the compulsory details below.
               </p>
               
               <form onSubmit={confirmRegistration} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
-                  <input type="text" required className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Full Name *</label>
+                  <input type="text" required className="w-full border-gray-300 dark:border-slate-600 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Department *</label>
-                    <input type="text" required className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.dept} onChange={e => setFormData({...formData, dept: e.target.value})} />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Department *</label>
+                    <input type="text" required className="w-full border-gray-300 dark:border-slate-600 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.dept} onChange={e => setFormData({...formData, dept: e.target.value})} />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Year *</label>
-                    <input type="text" required className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.year} onChange={e => setFormData({...formData, year: e.target.value})} />
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Year *</label>
+                    <input type="text" required className="w-full border-gray-300 dark:border-slate-600 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.year} onChange={e => setFormData({...formData, year: e.target.value})} />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
-                  <input type="tel" required className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Phone Number *</label>
+                  <input type="tel" required className="w-full border-gray-300 dark:border-slate-600 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Why do you want to join? *</label>
-                  <textarea required rows="3" className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.reason} onChange={e => setFormData({...formData, reason: e.target.value})}></textarea>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Why do you want to join? *</label>
+                  <textarea required rows="3" className="w-full border-gray-300 dark:border-slate-600 rounded-lg shadow-sm focus:ring-primary-500 focus:border-primary-500 p-2 border" value={formData.reason} onChange={e => setFormData({...formData, reason: e.target.value})}></textarea>
                 </div>
                 
                 <div className="flex gap-3 pt-4">

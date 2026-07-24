@@ -39,34 +39,34 @@ const DepartmentsPage = () => {
     <div className="space-y-8 animate-in fade-in duration-300 pb-10">
       
       {/* Department Header */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 overflow-hidden">
         <div className="h-32 bg-gradient-to-r from-primary-700 to-secondary-700"></div>
         <div className="px-6 sm:px-8 pb-8">
           <div className="relative flex justify-between items-end -mt-12 mb-6">
-            <div className="w-24 h-24 bg-white rounded-xl shadow-md border border-gray-100 flex items-center justify-center text-primary-600">
+            <div className="w-24 h-24 bg-white dark:bg-slate-800 rounded-xl shadow-md border border-gray-100 dark:border-slate-700/50 flex items-center justify-center text-primary-600 dark:text-primary-400">
               <Building2 className="w-12 h-12" />
             </div>
             <div className="flex gap-4">
               {DEPARTMENT.stats.map((stat, idx) => (
-                <div key={idx} className="text-center px-4 py-2 bg-gray-50 rounded-lg border border-gray-100 hidden sm:block">
-                  <div className="text-xl font-bold text-gray-900">{stat.value}</div>
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">{stat.label}</div>
+                <div key={idx} className="text-center px-4 py-2 bg-gray-50 dark:bg-slate-900 rounded-lg border border-gray-100 dark:border-slate-700/50 hidden sm:block">
+                  <div className="text-xl font-bold text-gray-900 dark:text-white">{stat.value}</div>
+                  <div className="text-xs font-medium text-gray-500 dark:text-slate-300 uppercase tracking-wider">{stat.label}</div>
                 </div>
               ))}
             </div>
           </div>
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">{DEPARTMENT.name}</h1>
-              <span className="bg-primary-50 text-primary-700 px-3 py-1 rounded-full text-sm font-bold border border-primary-100">{DEPARTMENT.code}</span>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">{DEPARTMENT.name}</h1>
+              <span className="bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-3 py-1 rounded-full text-sm font-bold border border-primary-100 dark:border-primary-800">{DEPARTMENT.code}</span>
             </div>
-            <p className="text-gray-600 text-lg max-w-2xl">{DEPARTMENT.description}</p>
+            <p className="text-gray-600 dark:text-slate-300 text-lg max-w-2xl">{DEPARTMENT.description}</p>
           </div>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 dark:border-slate-700">
         <nav className="-mb-px flex space-x-8 overflow-x-auto scrollbar-hide">
           {[
             { id: 'notices', label: 'Notice Board', icon: Bell },
@@ -83,12 +83,12 @@ const DepartmentsPage = () => {
                 className={`
                   whitespace-nowrap flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors
                   ${isActive 
-                    ? 'border-primary-500 text-primary-600' 
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-primary-500 text-primary-600 dark:text-primary-400' 
+                    : 'border-transparent text-gray-500 dark:text-slate-300 hover:text-gray-700 dark:text-slate-300 hover:border-gray-300 dark:border-slate-600'
                   }
                 `}
               >
-                <Icon className={`w-5 h-5 mr-2 ${isActive ? 'text-primary-500' : 'text-gray-400'}`} />
+                <Icon className={`w-5 h-5 mr-2 ${isActive ? 'text-primary-500' : 'text-gray-400 dark:text-slate-300'}`} />
                 {tab.label}
               </button>
             )
@@ -101,27 +101,27 @@ const DepartmentsPage = () => {
         
         {/* Notice Board Tab */}
         {activeTab === 'notices' && (
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-2 sm:p-6 animate-in slide-in-from-bottom-2 fade-in duration-300">
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700/50 shadow-sm p-2 sm:p-6 animate-in slide-in-from-bottom-2 fade-in duration-300">
             <div className="space-y-4">
               {NOTICES.map(notice => (
-                <div key={notice.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-colors group cursor-pointer">
+                <div key={notice.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg hover:bg-gray-50 dark:bg-slate-900 border border-transparent hover:border-gray-100 dark:border-slate-700/50 transition-colors group cursor-pointer">
                   <div className="flex items-start gap-4">
                     <div className={`p-2 rounded-lg mt-1 ${
-                      notice.type === 'important' ? 'bg-danger-50 text-danger-600' :
-                      notice.type === 'event' ? 'bg-secondary-50 text-secondary-600' : 'bg-primary-50 text-primary-600'
+                      notice.type === 'important' ? 'bg-danger-50 dark:bg-danger-900/30 text-danger-600 dark:text-danger-400' :
+                      notice.type === 'event' ? 'bg-secondary-50 text-secondary-600' : 'bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
                     }`}>
                       <Bell className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-gray-900 font-semibold group-hover:text-primary-600 transition-colors">{notice.title}</h3>
-                      <p className="text-sm text-gray-500 mt-1">Posted on {notice.date}</p>
+                      <h3 className="text-gray-900 dark:text-white font-semibold group-hover:text-primary-600 dark:text-primary-400 transition-colors">{notice.title}</h3>
+                      <p className="text-sm text-gray-500 dark:text-slate-300 mt-1">Posted on {notice.date}</p>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-primary-500 transition-colors hidden sm:block" />
                 </div>
               ))}
             </div>
-            <div className="mt-6 text-center border-t border-gray-100 pt-6">
+            <div className="mt-6 text-center border-t border-gray-100 dark:border-slate-700/50 pt-6">
               <Button variant="outline">View All Archives</Button>
             </div>
           </div>
@@ -131,19 +131,19 @@ const DepartmentsPage = () => {
         {activeTab === 'faculty' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in slide-in-from-bottom-2 fade-in duration-300">
             {FACULTY.map(faculty => (
-              <div key={faculty.id} className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                <div className="h-24 bg-gray-50"></div>
+              <div key={faculty.id} className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700/50 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <div className="h-24 bg-gray-50 dark:bg-slate-900"></div>
                 <div className="px-6 pb-6 text-center -mt-12">
                   <img src={faculty.image} alt={faculty.name} className="w-24 h-24 rounded-full border-4 border-white shadow-sm mx-auto object-cover" />
-                  <h3 className="text-lg font-bold text-gray-900 mt-3">{faculty.name}</h3>
-                  <p className="text-primary-600 font-medium text-sm">{faculty.role}</p>
-                  <p className="text-gray-500 text-sm mt-1">{faculty.specialization}</p>
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-3">{faculty.name}</h3>
+                  <p className="text-primary-600 dark:text-primary-400 font-medium text-sm">{faculty.role}</p>
+                  <p className="text-gray-500 dark:text-slate-300 text-sm mt-1">{faculty.specialization}</p>
                   
                   <div className="mt-6 flex flex-col gap-2">
-                    <a href={`mailto:${faculty.email}`} className="flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-primary-600 transition-colors bg-gray-50 py-2 rounded-lg">
+                    <a href={`mailto:${faculty.email}`} className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-slate-300 hover:text-primary-600 dark:text-primary-400 transition-colors bg-gray-50 dark:bg-slate-900 py-2 rounded-lg">
                       <Mail className="w-4 h-4" /> {faculty.email}
                     </a>
-                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600 bg-gray-50 py-2 rounded-lg">
+                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-slate-300 bg-gray-50 dark:bg-slate-900 py-2 rounded-lg">
                       <Phone className="w-4 h-4" /> {faculty.phone}
                     </div>
                   </div>
@@ -155,18 +155,18 @@ const DepartmentsPage = () => {
 
         {/* Academic Resources Tab */}
         {activeTab === 'resources' && (
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 animate-in slide-in-from-bottom-2 fade-in duration-300">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Downloads & Documents</h2>
+          <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700/50 shadow-sm p-6 animate-in slide-in-from-bottom-2 fade-in duration-300">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Downloads & Documents</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {RESOURCES.map(resource => (
-                <div key={resource.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:shadow-sm transition-all group">
+                <div key={resource.id} className="flex items-center justify-between p-4 border border-gray-200 dark:border-slate-700 rounded-lg hover:border-primary-300 hover:shadow-sm transition-all group">
                   <div className="flex items-center gap-4">
-                    <div className="p-3 bg-gray-50 rounded-lg text-gray-500 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
+                    <div className="p-3 bg-gray-50 dark:bg-slate-900 rounded-lg text-gray-500 dark:text-slate-300 group-hover:bg-primary-50 dark:bg-primary-900/30 group-hover:text-primary-600 dark:text-primary-400 transition-colors">
                       <FileText className="w-6 h-6" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{resource.title}</h3>
-                      <p className="text-xs text-gray-500 mt-1 font-mono">{resource.type} • {resource.size}</p>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{resource.title}</h3>
+                      <p className="text-xs text-gray-500 dark:text-slate-300 mt-1 font-mono">{resource.type} • {resource.size}</p>
                     </div>
                   </div>
                   <Button variant="outline" icon={Download} className="flex-shrink-0" />
@@ -179,27 +179,27 @@ const DepartmentsPage = () => {
         {/* Labs & Infrastructure Tab */}
         {activeTab === 'labs' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-bottom-2 fade-in duration-300">
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700/50 shadow-sm overflow-hidden">
               <div className="h-48 bg-[url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=600')] bg-cover bg-center"></div>
               <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900">Advanced AI Lab</h3>
-                <p className="text-gray-600 mt-2 text-sm leading-relaxed">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Advanced AI Lab</h3>
+                <p className="text-gray-600 dark:text-slate-300 mt-2 text-sm leading-relaxed">
                   Equipped with 60 high-performance workstations featuring NVIDIA RTX 4090 GPUs for deep learning and parallel computing research.
                 </p>
-                <div className="mt-4 flex items-center text-sm font-medium text-primary-600 cursor-pointer hover:text-primary-700">
+                <div className="mt-4 flex items-center text-sm font-medium text-primary-600 dark:text-primary-400 cursor-pointer hover:text-primary-700 dark:text-primary-300">
                   View Schedule <ExternalLink className="w-4 h-4 ml-1" />
                 </div>
               </div>
             </div>
             
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700/50 shadow-sm overflow-hidden">
               <div className="h-48 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600')] bg-cover bg-center"></div>
               <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900">Data Analytics Center</h3>
-                <p className="text-gray-600 mt-2 text-sm leading-relaxed">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Data Analytics Center</h3>
+                <p className="text-gray-600 dark:text-slate-300 mt-2 text-sm leading-relaxed">
                   A specialized facility for big data processing, featuring local Hadoop clusters and enterprise data visualization software suites.
                 </p>
-                <div className="mt-4 flex items-center text-sm font-medium text-primary-600 cursor-pointer hover:text-primary-700">
+                <div className="mt-4 flex items-center text-sm font-medium text-primary-600 dark:text-primary-400 cursor-pointer hover:text-primary-700 dark:text-primary-300">
                   View Schedule <ExternalLink className="w-4 h-4 ml-1" />
                 </div>
               </div>

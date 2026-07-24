@@ -8,7 +8,7 @@ const departments = [
     name: 'Computer Science',
     icon: <Code className="w-8 h-8 text-indigo-500" />,
     description: 'Master the art of software engineering and algorithms in our state-of-the-art programming hubs.',
-    color: 'bg-indigo-50'
+    color: 'bg-indigo-50 dark:bg-indigo-900/30'
   },
   {
     name: 'Artificial Intelligence',
@@ -26,15 +26,15 @@ const departments = [
 
 const DepartmentsPreview = () => {
   return (
-    <section id="departments" className="py-24 bg-white relative">
+    <section id="departments" className="py-24 bg-white dark:bg-slate-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-sm font-bold text-indigo-600 tracking-widest uppercase mb-3">Academic Excellence</h2>
-          <p className="text-3xl font-extrabold text-gray-900 sm:text-5xl tracking-tight">
+          <h2 className="text-sm font-bold text-indigo-600 dark:text-indigo-400 tracking-widest uppercase mb-3">Academic Excellence</h2>
+          <p className="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-5xl tracking-tight">
             Explore Top Departments
           </p>
-          <p className="mt-6 text-xl text-gray-500 leading-relaxed">
+          <p className="mt-6 text-xl text-gray-500 dark:text-slate-300 leading-relaxed">
             Discover our world-class facilities and specialized programs designed to launch your career.
           </p>
         </div>
@@ -43,19 +43,19 @@ const DepartmentsPreview = () => {
           {/* Cards */}
           <div className="lg:w-1/2 space-y-6 w-full">
             {departments.map((dept, index) => (
-              <div key={index} className="flex gap-6 p-6 rounded-3xl border border-gray-100 hover:border-indigo-100 bg-white hover:bg-gray-50 hover:shadow-lg transition-all duration-300 group cursor-pointer">
+              <div key={index} className="flex gap-6 p-6 rounded-3xl border border-gray-100 dark:border-slate-700/50 hover:border-indigo-100 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:bg-slate-900 hover:shadow-lg transition-all duration-300 group cursor-pointer">
                 <div className={`${dept.color} p-4 rounded-2xl shrink-0 h-16 w-16 flex items-center justify-center transition-transform group-hover:scale-110 duration-300`}>
                   {dept.icon}
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">{dept.name}</h3>
-                  <p className="text-gray-600 leading-relaxed">{dept.description}</p>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:text-indigo-400 transition-colors">{dept.name}</h3>
+                  <p className="text-gray-600 dark:text-slate-300 leading-relaxed">{dept.description}</p>
                 </div>
               </div>
             ))}
             
             <div className="pt-4">
-              <Link to="/login" className="inline-flex items-center text-lg font-bold text-indigo-600 hover:text-indigo-700">
+              <Link to="/login" className="inline-flex items-center text-lg font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:text-indigo-300">
                 View all departments
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>

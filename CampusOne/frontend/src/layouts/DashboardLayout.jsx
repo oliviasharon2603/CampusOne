@@ -10,7 +10,7 @@ const DashboardLayout = () => {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-gray-50  font-sans transition-colors duration-300 selection:bg-primary-100  selection:text-primary-900  text-gray-900 ">
+    <div className="flex h-screen bg-gray-50 dark:bg-slate-900  font-sans transition-colors duration-300 selection:bg-primary-100 dark:bg-primary-900/40  selection:text-primary-900 dark:text-primary-100  text-gray-900 dark:text-white ">
       {/* Sidebar - Desktop */}
       <Sidebar />
 
@@ -40,7 +40,7 @@ const DashboardLayout = () => {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setMobileMenuOpen(false)}></div>
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white h-full">
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white dark:bg-slate-800 h-full">
             <Sidebar />
           </div>
         </div>

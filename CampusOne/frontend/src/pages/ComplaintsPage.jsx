@@ -139,10 +139,10 @@ const ComplaintsPage = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'PENDING': return 'bg-danger-50 text-danger-700 border-danger-200';
-      case 'IN PROGRESS': return 'bg-warning-50 text-warning-700 border-warning-200';
-      case 'RESOLVED': return 'bg-success-50 text-success-700 border-success-200';
-      default: return 'bg-gray-50 text-gray-700';
+      case 'PENDING': return 'bg-danger-50 dark:bg-danger-900/30 text-danger-700 dark:text-danger-300 border-danger-200 dark:border-danger-700';
+      case 'IN PROGRESS': return 'bg-warning-50 dark:bg-warning-900/30 text-warning-700 dark:text-warning-300 border-warning-200';
+      case 'RESOLVED': return 'bg-success-50 dark:bg-success-900/30 text-success-700 dark:text-success-300 border-success-200';
+      default: return 'bg-gray-50 dark:bg-slate-900 text-gray-700 dark:text-slate-300';
     }
   };
 
@@ -150,15 +150,15 @@ const ComplaintsPage = () => {
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-300 pb-10">
       
       {/* Header Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="w-full md:w-2/3">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 flex items-center">
-            <div className="bg-primary-50 text-primary-600 p-2.5 rounded-xl mr-3 shadow-sm border border-primary-100">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white flex items-center">
+            <div className="bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 p-2.5 rounded-xl mr-3 shadow-sm border border-primary-100 dark:border-primary-800">
               <ShieldAlert className="w-7 h-7" />
             </div>
             Grievance Redressal
           </h1>
-          <p className="text-gray-600 mt-3 text-lg font-medium">Report campus issues, track resolution progress, and communicate directly with administration.</p>
+          <p className="text-gray-600 dark:text-slate-300 mt-3 text-lg font-medium">Report campus issues, track resolution progress, and communicate directly with administration.</p>
         </div>
         <div className="w-full md:w-1/3 h-32 md:h-40 rounded-xl overflow-hidden shadow-md">
            <img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80" alt="Tech Support" className="w-full h-full object-cover" />
@@ -166,9 +166,9 @@ const ComplaintsPage = () => {
       </div>
 
       {/* The Composer */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 border-b border-gray-100 bg-gray-50/50">
-          <h2 className="font-bold text-gray-900 mb-3">File a New Complaint</h2>
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 overflow-hidden">
+        <div className="p-4 border-b border-gray-100 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-900/50">
+          <h2 className="font-bold text-gray-900 dark:text-white mb-3">File a New Complaint</h2>
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map(cat => (
               <button
@@ -178,10 +178,10 @@ const ComplaintsPage = () => {
                 className={`flex items-center px-4 py-2 rounded-lg text-sm font-semibold transition-all border ${
                   category === cat.id 
                     ? 'bg-primary-500 text-white border-primary-500 shadow-md' 
-                    : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                    : 'bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700 hover:bg-gray-50 dark:bg-slate-900'
                 }`}
               >
-                <cat.icon className={`w-4 h-4 mr-2 ${category === cat.id ? 'text-white' : 'text-gray-400'}`} />
+                <cat.icon className={`w-4 h-4 mr-2 ${category === cat.id ? 'text-white' : 'text-gray-400 dark:text-slate-300'}`} />
                 {cat.id}
               </button>
             ))}
@@ -193,7 +193,7 @@ const ComplaintsPage = () => {
             <div>
               <textarea 
                 placeholder="Describe the issue in detail..."
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-4 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:bg-white transition-all resize-none min-h-[120px]"
+                className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-4 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 focus:bg-white dark:bg-slate-800 transition-all resize-none min-h-[120px]"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 required
@@ -202,11 +202,11 @@ const ComplaintsPage = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
               <div className="flex-1 relative w-full">
-                <AlertCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <AlertCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-slate-300 w-4 h-4" />
                 <input 
                   type="text" 
                   placeholder="Exact Location (e.g. Lab 4, Block B)"
-                  className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 transition-shadow"
+                  className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 transition-shadow"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   required
@@ -236,7 +236,7 @@ const ComplaintsPage = () => {
             {/* Image Preview */}
             {previewUrl && (
               <div className="relative mt-4 inline-block">
-                <img src={previewUrl} alt="Preview" className="h-32 rounded-xl object-cover border border-gray-200 shadow-sm" />
+                <img src={previewUrl} alt="Preview" className="h-32 rounded-xl object-cover border border-gray-200 dark:border-slate-700 shadow-sm" />
                 <button 
                   type="button"
                   onClick={clearImage}
@@ -248,7 +248,7 @@ const ComplaintsPage = () => {
             )}
           </div>
           
-          <div className="pt-6 mt-6 border-t border-gray-100 flex justify-end">
+          <div className="pt-6 mt-6 border-t border-gray-100 dark:border-slate-700/50 flex justify-end">
             <Button type="submit" variant="primary" icon={Send}>Submit Complaint</Button>
           </div>
         </form>
@@ -257,16 +257,16 @@ const ComplaintsPage = () => {
       {/* The Conversation Feed */}
       <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6 [&>div]:break-inside-avoid">
         {complaints.map(complaint => (
-          <div key={complaint.id} className="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+          <div key={complaint.id} className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 overflow-hidden hover:shadow-md transition-shadow">
             <div className="p-6">
               
               {/* Complaint Header */}
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
                 <div className="flex items-center gap-3">
-                  <img src={complaint.author.avatar} alt={complaint.author.name} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
+                  <img src={complaint.author.avatar} alt={complaint.author.name} className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-slate-700" />
                   <div>
-                    <h3 className="font-bold text-gray-900">{complaint.author.name}</h3>
-                    <div className="flex items-center text-xs text-gray-500 mt-0.5">
+                    <h3 className="font-bold text-gray-900 dark:text-white">{complaint.author.name}</h3>
+                    <div className="flex items-center text-xs text-gray-500 dark:text-slate-300 mt-0.5">
                       <Clock className="w-3 h-3 mr-1" /> {complaint.timestamp}
                       <span className="mx-2">•</span>
                       <Building className="w-3 h-3 mr-1" /> {complaint.location}
@@ -275,7 +275,7 @@ const ComplaintsPage = () => {
                 </div>
                 
                 <div className="flex flex-col items-end gap-2">
-                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{complaint.category}</span>
+                  <span className="text-xs font-bold text-gray-500 dark:text-slate-300 uppercase tracking-wider">{complaint.category}</span>
                   <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border flex items-center shadow-sm ${getStatusColor(complaint.status)}`}>
                     {complaint.status === 'RESOLVED' ? <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> : <Clock className="w-3.5 h-3.5 mr-1" />}
                     Status: {complaint.status}
@@ -284,10 +284,10 @@ const ComplaintsPage = () => {
               </div>
 
               {/* Complaint Content */}
-              <p className="text-gray-800 leading-relaxed mb-4">{complaint.description}</p>
+              <p className="text-gray-800 dark:text-slate-200 leading-relaxed mb-4">{complaint.description}</p>
               
               {complaint.image && (
-                <div className="mb-4 rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                <div className="mb-4 rounded-xl overflow-hidden border border-gray-100 dark:border-slate-700/50 shadow-sm">
                   <img src={complaint.image} alt="Attachment" className="w-full max-h-96 object-cover" />
                 </div>
               )}
@@ -296,7 +296,7 @@ const ComplaintsPage = () => {
               <div className="flex gap-4 pt-4 border-t border-gray-50">
                 <button 
                   onClick={() => setReplyingTo(replyingTo === complaint.id ? null : complaint.id)}
-                  className="flex items-center text-sm font-medium text-gray-500 hover:text-primary-600 transition-colors bg-gray-50 hover:bg-primary-50 px-3 py-1.5 rounded-lg border border-transparent hover:border-primary-100"
+                  className="flex items-center text-sm font-medium text-gray-500 dark:text-slate-300 hover:text-primary-600 dark:text-primary-400 transition-colors bg-gray-50 dark:bg-slate-900 hover:bg-primary-50 dark:bg-primary-900/30 px-3 py-1.5 rounded-lg border border-transparent hover:border-primary-100 dark:border-primary-800"
                 >
                   <MessageSquare className="w-4 h-4 mr-2" /> 
                   {complaint.replies.length > 0 ? `View ${complaint.replies.length} Updates` : 'Add Comment'}
@@ -307,25 +307,25 @@ const ComplaintsPage = () => {
 
             {/* Conversation Thread (Replies) */}
             {(complaint.replies.length > 0 || replyingTo === complaint.id) && (
-              <div className="bg-gray-50/80 p-6 border-t border-gray-100">
+              <div className="bg-gray-50 dark:bg-slate-900/80 p-6 border-t border-gray-100 dark:border-slate-700/50">
                 
                 {/* Existing Replies */}
                 {complaint.replies.length > 0 && (
                   <div className="space-y-5 mb-6">
                     {complaint.replies.map(reply => (
                       <div key={reply.id} className="flex gap-3">
-                        <img src={reply.avatar} alt={reply.author} className="w-8 h-8 rounded-full object-cover border border-gray-200 mt-1" />
+                        <img src={reply.avatar} alt={reply.author} className="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-slate-700 mt-1" />
                         <div className={`flex-1 p-4 rounded-2xl rounded-tl-none border shadow-sm ${
-                          reply.isAdmin ? 'bg-primary-50 border-primary-100' : 'bg-white border-gray-100'
+                          reply.isAdmin ? 'bg-primary-50 dark:bg-primary-900/30 border-primary-100 dark:border-primary-800' : 'bg-white dark:bg-slate-800 border-gray-100 dark:border-slate-700/50'
                         }`}>
                           <div className="flex justify-between items-baseline mb-2">
-                            <span className={`font-bold text-sm flex items-center ${reply.isAdmin ? 'text-primary-900' : 'text-gray-900'}`}>
+                            <span className={`font-bold text-sm flex items-center ${reply.isAdmin ? 'text-primary-900 dark:text-primary-100' : 'text-gray-900 dark:text-white'}`}>
                               {reply.author}
                               {reply.isAdmin && <CheckCircle2 className="w-4 h-4 ml-1.5 text-primary-500" />}
                             </span>
-                            <span className={`text-xs ${reply.isAdmin ? 'text-primary-600' : 'text-gray-400'}`}>{reply.timestamp}</span>
+                            <span className={`text-xs ${reply.isAdmin ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-slate-300'}`}>{reply.timestamp}</span>
                           </div>
-                          <p className={`text-sm leading-relaxed ${reply.isAdmin ? 'text-primary-800' : 'text-gray-700'}`}>{reply.text}</p>
+                          <p className={`text-sm leading-relaxed ${reply.isAdmin ? 'text-primary-800 dark:text-primary-200' : 'text-gray-700 dark:text-slate-300'}`}>{reply.text}</p>
                           
                           {/* Optional Image inside a reply */}
                           {reply.image && (
@@ -342,12 +342,12 @@ const ComplaintsPage = () => {
                 {/* Reply Input Box */}
                 {replyingTo === complaint.id && (
                   <div className="flex gap-3">
-                    <img src="https://ui-avatars.com/api/?name=Current+User&background=6366f1&color=fff" alt="You" className="w-8 h-8 rounded-full border border-gray-200 mt-1" />
+                    <img src="https://ui-avatars.com/api/?name=Current+User&background=6366f1&color=fff" alt="You" className="w-8 h-8 rounded-full border border-gray-200 dark:border-slate-700 mt-1" />
                     <div className="flex-1 flex gap-2">
                       <input 
                         type="text" 
                         placeholder="Add a comment or follow-up..."
-                        className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        className="flex-1 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
                         value={replyText}
                         onChange={(e) => setReplyText(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleReplySubmit(complaint.id)}

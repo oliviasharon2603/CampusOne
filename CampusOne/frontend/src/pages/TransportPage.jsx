@@ -30,7 +30,7 @@ const TransportPage = () => {
             departure: r.departure_time,
             arrival: r.arrival_time,
             status: index % 2 === 0 ? "On Time" : "Delayed",
-            theme: index % 2 === 0 ? "bg-primary-50 text-primary-600 border-primary-200" : "bg-secondary-50 text-secondary-600 border-secondary-200",
+            theme: index % 2 === 0 ? "bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 border-primary-200 dark:border-primary-700" : "bg-secondary-50 text-secondary-600 border-secondary-200",
             stops: [
               { name: r.name, time: r.departure_time },
               { name: "City Center", time: "07:50 AM" },
@@ -100,10 +100,10 @@ const TransportPage = () => {
       {/* Toast Notification */}
       {toast && (
         <div className="fixed top-20 right-8 z-50 animate-in slide-in-from-top fade-in duration-300">
-          <div className="bg-white border border-success-200 shadow-lg rounded-lg p-4 flex items-start space-x-3 max-w-sm">
+          <div className="bg-white dark:bg-slate-800 border border-success-200 shadow-lg rounded-lg p-4 flex items-start space-x-3 max-w-sm">
             <CheckCircle2 className="w-5 h-5 text-success-500 mt-0.5 flex-shrink-0" />
-            <p className="text-sm font-medium text-gray-800">{toast}</p>
-            <button onClick={() => setToast(null)} className="text-gray-400 hover:text-gray-600">
+            <p className="text-sm font-medium text-gray-800 dark:text-slate-200">{toast}</p>
+            <button onClick={() => setToast(null)} className="text-gray-400 dark:text-slate-300 hover:text-gray-600 dark:text-slate-300">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -111,15 +111,15 @@ const TransportPage = () => {
       )}
 
       {/* Header Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="w-full md:w-2/3">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 flex items-center">
-            <div className="bg-primary-50 text-primary-600 p-2.5 rounded-xl mr-3 shadow-sm border border-primary-100">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white flex items-center">
+            <div className="bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 p-2.5 rounded-xl mr-3 shadow-sm border border-primary-100 dark:border-primary-800">
               <BusFront className="w-7 h-7" />
             </div>
             Campus Transport
           </h1>
-          <p className="text-gray-600 mt-3 text-lg font-medium">Manage your commute across Trichy city. View bus routes, track vehicles in real-time, and access your digital transport pass.</p>
+          <p className="text-gray-600 dark:text-slate-300 mt-3 text-lg font-medium">Manage your commute across Trichy city. View bus routes, track vehicles in real-time, and access your digital transport pass.</p>
         </div>
         <div className="w-full md:w-1/3 h-32 md:h-40 rounded-xl overflow-hidden shadow-md">
            <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80" alt="Transport" className="w-full h-full object-cover" />
@@ -127,7 +127,7 @@ const TransportPage = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-1 bg-gray-100/50 p-1 rounded-xl w-fit">
+      <div className="flex space-x-1 bg-gray-100 dark:bg-slate-700/50 p-1 rounded-xl w-fit">
         {[
           { id: 'routes', label: 'Routes & Schedule', icon: MapPin },
           { id: 'pass', label: 'My Transport Pass', icon: CreditCard },
@@ -141,8 +141,8 @@ const TransportPage = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                 isActive 
-                  ? 'bg-white text-primary-600 shadow-sm border border-gray-200/50' 
-                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-200/50'
+                  ? 'bg-white dark:bg-slate-800 text-primary-600 dark:text-primary-400 shadow-sm border border-gray-200 dark:border-slate-700/50' 
+                  : 'text-gray-500 dark:text-slate-300 hover:text-gray-900 dark:text-white hover:bg-gray-200 dark:bg-slate-700/50'
               }`}
             >
               <Icon className={`w-4 h-4 mr-2 ${isActive ? 'text-primary-500' : ''}`} />
@@ -159,14 +159,14 @@ const TransportPage = () => {
         {activeTab === 'routes' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-6 animate-in slide-in-from-bottom-2 fade-in duration-300">
             {routesData.map(route => (
-              <div key={route.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow flex flex-col group">
+              <div key={route.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700/50 overflow-hidden hover:shadow-md transition-shadow flex flex-col group">
                 <div className={`p-4 border-b ${route.theme}`}>
                   <div className="flex justify-between items-start mb-2">
-                    <span className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
+                    <span className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-2 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
                       {route.busNo}
                     </span>
-                    <span className={`text-xs font-bold px-2 py-1 rounded-md bg-white/90 backdrop-blur-sm flex items-center ${
-                      route.status === 'On Time' ? 'text-success-600' : 'text-warning-600'
+                    <span className={`text-xs font-bold px-2 py-1 rounded-md bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm flex items-center ${
+                      route.status === 'On Time' ? 'text-success-600 dark:text-success-400' : 'text-warning-600 dark:text-warning-400'
                     }`}>
                       {route.status === 'On Time' ? <CheckCircle2 className="w-3 h-3 mr-1" /> : <AlertCircle className="w-3 h-3 mr-1" />}
                       {route.status}
@@ -178,16 +178,16 @@ const TransportPage = () => {
                 <div className="p-5 flex-1 flex flex-col">
                   <div className="space-y-3 mb-6 flex-1">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-500 flex items-center"><Clock className="w-4 h-4 mr-2 text-gray-400" /> Start</span>
-                      <strong className="text-gray-900">{route.departure}</strong>
+                      <span className="text-gray-500 dark:text-slate-300 flex items-center"><Clock className="w-4 h-4 mr-2 text-gray-400 dark:text-slate-300" /> Start</span>
+                      <strong className="text-gray-900 dark:text-white">{route.departure}</strong>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-gray-500 flex items-center"><MapPin className="w-4 h-4 mr-2 text-gray-400" /> Campus</span>
-                      <strong className="text-gray-900">{route.arrival}</strong>
+                      <span className="text-gray-500 dark:text-slate-300 flex items-center"><MapPin className="w-4 h-4 mr-2 text-gray-400 dark:text-slate-300" /> Campus</span>
+                      <strong className="text-gray-900 dark:text-white">{route.arrival}</strong>
                     </div>
                     <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-50">
-                      <span className="text-gray-500 flex items-center"><Phone className="w-4 h-4 mr-2 text-gray-400" /> Driver</span>
-                      <strong className="text-gray-900">{route.driver}</strong>
+                      <span className="text-gray-500 dark:text-slate-300 flex items-center"><Phone className="w-4 h-4 mr-2 text-gray-400 dark:text-slate-300" /> Driver</span>
+                      <strong className="text-gray-900 dark:text-white">{route.driver}</strong>
                     </div>
                   </div>
                   
@@ -220,7 +220,7 @@ const TransportPage = () => {
                         </div>
                         <h2 className="text-3xl font-extrabold">{transportPass.term} Pass</h2>
                       </div>
-                      <div className="bg-white p-2 rounded-xl shadow-inner flex-shrink-0">
+                      <div className="bg-white dark:bg-slate-800 p-2 rounded-xl shadow-inner flex-shrink-0">
                         <img 
                           src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${transportPass.id}`} 
                           alt="Pass QR Code" 
@@ -231,28 +231,28 @@ const TransportPage = () => {
                     
                     <div className="grid grid-cols-2 gap-y-6 gap-x-12 mb-8 border-t border-white/10 pt-8">
                       <div>
-                        <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Pass ID</p>
+                        <p className="text-gray-400 dark:text-slate-300 text-xs font-bold uppercase tracking-wider mb-1">Pass ID</p>
                         <p className="text-lg font-mono font-medium">{transportPass.id}</p>
                       </div>
                       <div>
-                        <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Status</p>
+                        <p className="text-gray-400 dark:text-slate-300 text-xs font-bold uppercase tracking-wider mb-1">Status</p>
                         <p className="text-lg font-medium text-success-400 flex items-center">
                           <CheckCircle2 className="w-5 h-5 mr-1" /> Active
                         </p>
                       </div>
                       <div>
-                        <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Designated Route</p>
+                        <p className="text-gray-400 dark:text-slate-300 text-xs font-bold uppercase tracking-wider mb-1">Designated Route</p>
                         <p className="text-lg font-medium">{transportPass.route}</p>
                       </div>
                       <div>
-                        <p className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Valid Until</p>
+                        <p className="text-gray-400 dark:text-slate-300 text-xs font-bold uppercase tracking-wider mb-1">Valid Until</p>
                         <p className="text-lg font-medium">{transportPass.validUntil}</p>
                       </div>
                     </div>
                     
-                    <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 flex justify-between items-center border border-white/10">
+                    <div className="bg-white/10 dark:bg-slate-800/10 backdrop-blur-md rounded-xl p-4 flex justify-between items-center border border-white/10">
                       <span className="text-sm text-gray-300">Show this digital pass when boarding the bus.</span>
-                      <Button variant="outline" size="small" className="text-white border-white/20 hover:bg-white/20" onClick={handleDownloadPDF}>
+                      <Button variant="outline" size="small" className="text-white border-white/20 hover:bg-white/20 dark:bg-slate-800/20" onClick={handleDownloadPDF}>
                         Download File
                       </Button>
                     </div>
@@ -261,20 +261,20 @@ const TransportPage = () => {
               </div>
             ) : (
               /* Application Form UI */
-              <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+              <div className="max-w-2xl mx-auto bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 p-8">
                 <div className="text-center mb-8">
-                  <div className="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-primary-100 text-primary-600">
+                  <div className="w-16 h-16 bg-primary-50 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-primary-100 dark:border-primary-800 text-primary-600 dark:text-primary-400">
                     <CreditCard className="w-8 h-8" />
                   </div>
-                  <h2 className="text-2xl font-extrabold text-gray-900">Apply for Transport Pass</h2>
-                  <p className="text-gray-500 mt-2">Select your route and term to generate an instant digital bus pass.</p>
+                  <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white">Apply for Transport Pass</h2>
+                  <p className="text-gray-500 dark:text-slate-300 mt-2">Select your route and term to generate an instant digital bus pass.</p>
                 </div>
                 
                 <form onSubmit={handleApplyPass} className="space-y-6">
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Select Route (Trichy City)</label>
+                    <label className="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Select Route (Trichy City)</label>
                     <select 
-                      className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:outline-none transition-shadow"
+                      className="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg p-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:outline-none transition-shadow"
                       value={passForm.routeId}
                       onChange={(e) => setPassForm({...passForm, routeId: Number(e.target.value)})}
                     >
@@ -285,7 +285,7 @@ const TransportPage = () => {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Select Term</label>
+                    <label className="block text-sm font-bold text-gray-700 dark:text-slate-300 mb-2">Select Term</label>
                     <div className="grid grid-cols-2 gap-4">
                       {['Semester', 'Annual'].map(term => (
                         <div 
@@ -293,21 +293,21 @@ const TransportPage = () => {
                           onClick={() => setPassForm({...passForm, term})}
                           className={`border-2 rounded-xl p-4 cursor-pointer transition-all ${
                             passForm.term === term 
-                              ? 'border-primary-500 bg-primary-50' 
-                              : 'border-gray-100 hover:border-gray-200 bg-white'
+                              ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/30' 
+                              : 'border-gray-100 dark:border-slate-700/50 hover:border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800'
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <span className={`font-bold ${passForm.term === term ? 'text-primary-700' : 'text-gray-700'}`}>{term}</span>
+                            <span className={`font-bold ${passForm.term === term ? 'text-primary-700 dark:text-primary-300' : 'text-gray-700 dark:text-slate-300'}`}>{term}</span>
                             {passForm.term === term && <CheckCircle2 className="w-5 h-5 text-primary-500" />}
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">{term === 'Semester' ? 'Valid for 6 months' : 'Valid for 12 months'}</p>
+                          <p className="text-xs text-gray-500 dark:text-slate-300 mt-1">{term === 'Semester' ? 'Valid for 6 months' : 'Valid for 12 months'}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                   
-                  <div className="pt-4 border-t border-gray-100">
+                  <div className="pt-4 border-t border-gray-100 dark:border-slate-700/50">
                     <Button type="submit" variant="primary" className="w-full justify-center text-lg py-3">Generate Digital Pass</Button>
                   </div>
                 </form>
@@ -318,19 +318,19 @@ const TransportPage = () => {
 
         {/* LIVE TRACKING TAB */}
         {activeTab === 'tracking' && trackingRoute && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-300">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700/50 overflow-hidden animate-in slide-in-from-bottom-2 fade-in duration-300">
             <div className="flex flex-col lg:flex-row h-[600px]">
               
               {/* Sidebar Info */}
-              <div className="w-full lg:w-96 border-r border-gray-100 p-6 flex flex-col bg-gray-50/50">
-                <h3 className="font-bold text-gray-900 mb-4 flex items-center">
-                  <Navigation className="w-5 h-5 mr-2 text-primary-600" /> Live Status
+              <div className="w-full lg:w-96 border-r border-gray-100 dark:border-slate-700/50 p-6 flex flex-col bg-gray-50 dark:bg-slate-900/50">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                  <Navigation className="w-5 h-5 mr-2 text-primary-600 dark:text-primary-400" /> Live Status
                 </h3>
                 
                 <div className="mb-6">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Track Route</label>
+                  <label className="block text-xs font-bold text-gray-500 dark:text-slate-300 uppercase tracking-wider mb-2">Track Route</label>
                   <select 
-                    className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-primary-500 focus:outline-none"
+                    className="w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg p-2.5 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:outline-none"
                     value={trackingRoute.id}
                     onChange={(e) => setTrackingRoute(routesData.find(r => r.id === Number(e.target.value)))}
                   >
@@ -340,20 +340,20 @@ const TransportPage = () => {
                   </select>
                 </div>
                 
-                <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm mb-6 flex-1">
+                <div className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-100 dark:border-slate-700/50 shadow-sm mb-6 flex-1">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="bg-primary-50 text-primary-700 px-2.5 py-1 rounded-md text-xs font-bold border border-primary-100">
+                    <span className="bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-2.5 py-1 rounded-md text-xs font-bold border border-primary-100 dark:border-primary-800">
                       {trackingRoute.busNo}
                     </span>
-                    <span className="text-success-600 text-xs font-bold flex items-center animate-pulse">
+                    <span className="text-success-600 dark:text-success-400 text-xs font-bold flex items-center animate-pulse">
                       <div className="w-2 h-2 rounded-full bg-success-500 mr-1.5"></div> Live
                     </span>
                   </div>
                   
-                  <h4 className="text-lg font-bold text-gray-900 mb-1">{trackingRoute.name} Route</h4>
-                  <p className="text-sm text-gray-500 mb-6">Currently nearing <strong className="text-gray-700">{trackingRoute.stops[2].name}</strong>.</p>
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{trackingRoute.name} Route</h4>
+                  <p className="text-sm text-gray-500 dark:text-slate-300 mb-6">Currently nearing <strong className="text-gray-700 dark:text-slate-300">{trackingRoute.stops[2].name}</strong>.</p>
                   
-                  <div className="space-y-0 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gray-200 ml-2">
+                  <div className="space-y-0 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gray-200 dark:bg-slate-700 ml-2">
                     {trackingRoute.stops.map((stop, idx) => {
                       const isPassed = idx < 2;
                       const isCurrent = idx === 2;
@@ -361,21 +361,21 @@ const TransportPage = () => {
                       return (
                         <div key={idx} className={`relative flex items-center gap-4 text-sm z-10 pb-6 last:pb-0 ${isFuture ? 'opacity-50' : ''}`}>
                           <div className={`w-5 h-5 rounded-full border-4 border-white shadow flex-shrink-0 ${isPassed ? 'bg-success-500' : isCurrent ? 'bg-primary-500 animate-pulse' : 'bg-gray-300'}`}></div>
-                          <div className={`flex-1 font-medium ${isPassed || isCurrent ? 'text-gray-900' : 'text-gray-500'}`}>{stop.name}</div>
-                          <div className="text-gray-500 font-mono text-xs">{stop.time}</div>
+                          <div className={`flex-1 font-medium ${isPassed || isCurrent ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-slate-300'}`}>{stop.name}</div>
+                          <div className="text-gray-500 dark:text-slate-300 font-mono text-xs">{stop.time}</div>
                         </div>
                       )
                     })}
                   </div>
                 </div>
 
-                <Button variant="outline" className="w-full justify-center bg-white" icon={Phone} onClick={() => alert(`Calling driver ${trackingRoute.driver} at ${trackingRoute.contact}...`)}>
+                <Button variant="outline" className="w-full justify-center bg-white dark:bg-slate-800" icon={Phone} onClick={() => alert(`Calling driver ${trackingRoute.driver} at ${trackingRoute.contact}...`)}>
                   Contact Driver
                 </Button>
               </div>
 
               {/* Accurate Map iframe */}
-              <div className="flex-1 relative bg-gray-200 hidden sm:block overflow-hidden">
+              <div className="flex-1 relative bg-gray-200 dark:bg-slate-700 hidden sm:block overflow-hidden">
                 <iframe 
                   src={`https://maps.google.com/maps?q=${encodeURIComponent(trackingRoute.stops[0].name + " to CampusOne Tiruchirappalli")}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
                   width="100%" 
@@ -434,7 +434,7 @@ const TransportPage = () => {
       {selectedRoute && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" onClick={() => setSelectedRoute(null)}></div>
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full relative z-10 animate-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-md w-full relative z-10 animate-in zoom-in-95 duration-200">
             <div className={`p-5 border-b rounded-t-2xl flex justify-between items-center ${selectedRoute.theme}`}>
               <div>
                 <h3 className="font-bold text-lg">{selectedRoute.name} Route</h3>
@@ -446,19 +446,19 @@ const TransportPage = () => {
             </div>
             
             <div className="p-6">
-              <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6">Boarding Points & Timings</h4>
-              <div className="space-y-0 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px before:h-full before:w-0.5 before:bg-gray-200">
+              <h4 className="text-xs font-bold text-gray-400 dark:text-slate-300 uppercase tracking-wider mb-6">Boarding Points & Timings</h4>
+              <div className="space-y-0 relative before:absolute before:inset-0 before:ml-2 before:-translate-x-px before:h-full before:w-0.5 before:bg-gray-200 dark:bg-slate-700">
                 {selectedRoute.stops.map((stop, idx) => (
                   <div key={idx} className="relative flex items-center gap-4 text-sm z-10 pb-6 last:pb-0">
                     <div className={`w-4 h-4 rounded-full border-4 border-white shadow-sm flex-shrink-0 ${
                       idx === 0 ? 'bg-primary-500' : idx === selectedRoute.stops.length - 1 ? 'bg-success-500' : 'bg-gray-400'
                     }`}></div>
                     <div className="flex-1">
-                      <p className={`font-bold ${idx === selectedRoute.stops.length - 1 ? 'text-success-700' : 'text-gray-900'}`}>
+                      <p className={`font-bold ${idx === selectedRoute.stops.length - 1 ? 'text-success-700 dark:text-success-300' : 'text-gray-900 dark:text-white'}`}>
                         {stop.name}
                       </p>
                     </div>
-                    <div className="text-gray-500 font-mono bg-gray-50 px-2 py-1 rounded text-xs border border-gray-100 shadow-sm">
+                    <div className="text-gray-500 dark:text-slate-300 font-mono bg-gray-50 dark:bg-slate-900 px-2 py-1 rounded text-xs border border-gray-100 dark:border-slate-700/50 shadow-sm">
                       {stop.time}
                     </div>
                   </div>
@@ -466,7 +466,7 @@ const TransportPage = () => {
               </div>
             </div>
             
-            <div className="p-4 bg-gray-50 border-t border-gray-100 rounded-b-2xl">
+            <div className="p-4 bg-gray-50 dark:bg-slate-900 border-t border-gray-100 dark:border-slate-700/50 rounded-b-2xl">
               <Button variant="outline" className="w-full justify-center" onClick={() => setSelectedRoute(null)}>Close</Button>
             </div>
           </div>
