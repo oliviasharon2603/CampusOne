@@ -10,10 +10,7 @@ const HeroSection = () => {
           
           {/* Left Text Content */}
           <div className="lg:w-1/2 text-center lg:text-left">
-            <div className="inline-flex items-center bg-white border border-indigo-100 px-4 py-2 rounded-full mb-8 shadow-sm">
-              <Bot className="w-5 h-5 text-indigo-600 mr-2" />
-              <span className="text-sm font-semibold text-indigo-900">Powered by Google Gemini AI</span>
-            </div>
+
             
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 mb-6 leading-tight tracking-tight">
               One Campus. <br className="hidden md:block" />

@@ -99,13 +99,15 @@ app.post('/api/v1/library/wishlist', async (req, res) => {
 app.post('/api/v1/library/ai-search', async (req, res) => {
   const { query } = req.body;
   try {
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 800)); // simulate AI delay
+    const searchTerm = `%${query}%`;
     const [rows] = await pool.query(`
       SELECT b.id, b.title, b.author, c.name as category, b.available_copies as available, b.total_copies as total, b.cover_url as cover, b.rack_info as rack 
       FROM books b 
       LEFT JOIN book_categories c ON b.category_id = c.id
-      ORDER BY RAND() LIMIT 2
-    `);
+      WHERE b.title LIKE ? OR b.author LIKE ? OR c.name LIKE ?
+      LIMIT 10
+    `, [searchTerm, searchTerm, searchTerm]);
     res.json({ success: true, data: rows });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server Error' });
@@ -144,21 +146,57 @@ app.get('/api/v1/library/requests', async (req, res) => {
   }
 });
 
+app.post('/api/v1/library/book-request', async (req, res) => {
+  const { bookId, userId = 1 } = req.body;
+  if (!bookId) return res.status(400).json({ success: false, message: 'bookId required' });
+  try {
+    await pool.query('INSERT INTO book_requests (book_id, user_id, status) VALUES (?, ?, ?)', [bookId, userId, 'pending']);
+    res.json({ success: true, message: 'Book requested successfully' });
+  } catch (error) {
+    console.error('Error requesting book:', error);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+});
+
+app.delete('/api/v1/library/borrow-history/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM borrow_history WHERE id = ?', [req.params.id]);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+});
+
+app.delete('/api/v1/library/requests/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM book_requests WHERE id = ?', [req.params.id]);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+});
+
 // Dashboard API Routes
 app.get('/api/v1/dashboard', async (req, res) => {
   const { userId = 1 } = req.query;
   try {
     const [attRecords] = await pool.query('SELECT status FROM attendance_records WHERE user_id = ?', [userId]);
     let attendancePercent = 88; // Default mock if no records
+    let attendanceStats = { total: 0, attended: 0, leaves: 0 };
+    
     if (attRecords.length > 0) {
-      const present = attRecords.filter(r => r.status === 'Present').length;
-      attendancePercent = Math.round((present / attRecords.length) * 100);
+      const total = attRecords.length;
+      const attended = attRecords.filter(r => r.status === 'Present').length;
+      const leaves = attRecords.filter(r => r.status === 'On Leave').length;
+      attendancePercent = Math.round((attended / total) * 100);
+      attendanceStats = { total, attended, leaves };
     }
 
     const dashboardData = {
       success: true,
       data: {
         attendance: attendancePercent,
+        attendanceStats: attendanceStats,
         aiTip: { 
           title: "Upcoming Deadlines", 
           desc: "You have 2 assignments due next week. Consider starting the Operating Systems project this weekend.", 
@@ -201,10 +239,14 @@ app.get('/api/v1/notifications', async (req, res) => {
 
 // Events API Routes
 app.get('/api/v1/events', async (req, res) => {
+  const { userId } = req.query;
   try {
     const [events] = await pool.query('SELECT * FROM events');
-    const [registrations] = await pool.query('SELECT event_id FROM event_registrations');
-    const registeredIds = registrations.map(r => r.event_id);
+    let registeredIds = [];
+    if (userId) {
+      const [registrations] = await pool.query('SELECT event_id FROM event_registrations WHERE user_id = ?', [userId]);
+      registeredIds = registrations.map(r => r.event_id);
+    }
 
     const formattedEvents = events.map(ev => {
       let type = ev.status ? ev.status.toLowerCase() : 'upcoming';
@@ -253,6 +295,29 @@ app.post('/api/v1/events/register', async (req, res) => {
   }
 });
 
+// User Stats API
+app.get('/api/v1/users/:id/stats', async (req, res) => {
+  const userId = req.params.id;
+  if (!userId) return res.status(400).json({ success: false, message: 'User ID required' });
+  try {
+    const [events] = await pool.query('SELECT event_id FROM event_registrations WHERE user_id = ?', [userId]);
+    const [books] = await pool.query('SELECT book_id FROM borrow_history WHERE user_id = ?', [userId]);
+    const [clubs] = await pool.query('SELECT club_id FROM club_members WHERE user_id = ?', [userId]);
+    
+    res.json({
+      success: true,
+      data: {
+        registeredEvents: events.map(e => e.event_id),
+        borrowedBooks: books.map(b => b.book_id),
+        joinedClubs: clubs.map(c => c.club_id)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    res.status(500).json({ success: false, message: 'Server Error' });
+  }
+});
+
 // User Sync API
 app.post('/api/v1/users/sync', async (req, res) => {
   const { uid, email, displayName, photoURL } = req.body;
@@ -277,7 +342,7 @@ app.get('/api/v1/clubs', async (req, res) => {
     const [clubs] = await pool.query('SELECT * FROM clubs');
     let joinedIds = [];
     if (userId) {
-      const [memberships] = await pool.query('SELECT club_id FROM club_members WHERE user_id = ? OR email = ?', [userId, userId]);
+      const [memberships] = await pool.query('SELECT club_id FROM club_members WHERE user_id = ?', [userId]);
       joinedIds = memberships.map(m => m.club_id);
     }
     const formatted = clubs.map(c => ({
@@ -289,7 +354,8 @@ app.get('/api/v1/clubs', async (req, res) => {
       members: c.members_count || 0,
       incharge_name: c.incharge_name,
       contact_details: c.contact_details,
-      isMember: joinedIds.includes(c.id)
+      isMember: joinedIds.includes(c.id),
+      upcoming_event: c.upcoming_event
     }));
     res.json({ success: true, data: formatted });
   } catch (error) {
@@ -299,15 +365,15 @@ app.get('/api/v1/clubs', async (req, res) => {
 
 app.post('/api/v1/clubs/:id/join', async (req, res) => {
   const clubId = req.params.id;
-  const { student_name, email, reason } = req.body;
+  const { student_name, email, reason, userId } = req.body;
   if (!student_name || !email || !reason) {
     return res.status(400).json({ success: false, message: 'All fields are required' });
   }
   
   try {
     await pool.query(
-      'INSERT INTO club_members (club_id, student_name, email, reason, status) VALUES (?, ?, ?, ?, ?)',
-      [clubId, student_name, email, reason, 'pending']
+      'INSERT INTO club_members (club_id, student_name, email, reason, status, user_id) VALUES (?, ?, ?, ?, ?, ?)',
+      [clubId, student_name, email, reason, 'pending', userId || null]
     );
     await pool.query('UPDATE clubs SET members_count = members_count + 1 WHERE id = ?', [clubId]);
     res.json({ success: true, message: 'Joined successfully' });

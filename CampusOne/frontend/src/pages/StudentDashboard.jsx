@@ -6,7 +6,7 @@ import { Calendar, BookOpen, Clock, AlertCircle, ArrowRight, Sparkles, X, Users 
 import Button from '../components/ui/Button';
 import { useUserActivity } from '../context/UserActivityContext';
 
-const StatCard = ({ title, value, icon: Icon, colorClass, bgClass = "bg-white border-gray-100" }) => {
+const StatCard = ({ title, value, icon: Icon, colorClass, bgClass = "bg-white border-gray-100", subtext }) => {
   const isSolidDanger = bgClass.includes('danger-500');
   return (
     <div className={`${bgClass} rounded-xl shadow-sm border ${isSolidDanger ? 'border-transparent' : ''} p-6 flex items-center group hover:shadow-md transition-shadow`}>
@@ -16,6 +16,7 @@ const StatCard = ({ title, value, icon: Icon, colorClass, bgClass = "bg-white bo
       <div>
         <p className={`text-sm font-medium ${isSolidDanger ? 'text-danger-100' : 'text-gray-500'}`}>{title}</p>
         <h3 className={`text-2xl font-bold mt-1 ${isSolidDanger ? 'text-white' : 'text-gray-900'}`}>{value}</h3>
+        {subtext && <p className={`text-xs mt-1 font-medium ${isSolidDanger ? 'text-danger-200' : 'text-gray-400'}`}>{subtext}</p>}
       </div>
     </div>
   );
@@ -49,7 +50,7 @@ const StudentDashboard = () => {
   };
   
   const navigate = useNavigate();
-  const { borrowedBooks, registeredEvents, joinedClubs, dbUserId } = useUserActivity();
+  const { borrowedBooks, registeredEvents, joinedClubs, dbUserId, addCalendarEvent } = useUserActivity();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -98,7 +99,7 @@ const StudentDashboard = () => {
     fetchDashboardData();
   }, [dbUserId]);
 
-  const { attendance, aiTip, todaySchedule } = dashboardData;
+  const { attendance, attendanceStats, aiTip, todaySchedule } = dashboardData;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300 pb-10">
@@ -147,6 +148,7 @@ const StudentDashboard = () => {
           title="Attendance" 
           value={`${attendance}%`} 
           icon={Calendar} 
+          subtext={attendanceStats ? `${attendanceStats.attended}/${attendanceStats.total} Classes | ${attendanceStats.leaves} Leaves` : "Loading stats..."}
           colorClass={attendance < 75 ? "bg-white/20 text-white" : "bg-success-100 text-success-600"} 
           bgClass={attendance < 75 ? "bg-danger-500 border-transparent" : "bg-white border-gray-100"}
         />
@@ -270,27 +272,6 @@ const StudentDashboard = () => {
             </div>
           </div>
 
-          {/* Notifications Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-gray-900">Notifications</h2>
-            </div>
-            <div className="space-y-4">
-              {notifications.length === 0 ? (
-                <p className="text-gray-500 text-sm">You have no new notifications.</p>
-              ) : (
-                notifications.map((notif, idx) => (
-                  <div key={idx} className={`p-4 border rounded-xl transition-all ${notif.is_read ? 'bg-white border-gray-100' : 'bg-primary-50 border-primary-100'}`}>
-                    <h4 className="font-semibold text-gray-900">{notif.title}</h4>
-                    <p className="text-sm text-gray-600 mt-1">{notif.message}</p>
-                    <p className="text-xs text-gray-400 mt-2 font-medium">
-                      {new Date(notif.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
         </div>
       </div>
 
@@ -316,27 +297,13 @@ const StudentDashboard = () => {
                 <p className="text-sm font-medium text-gray-700  mb-3">Suggested Actions:</p>
                 <div className="flex gap-3">
                   <Button size="small" onClick={() => {
-                    const icsData = [
-                      'BEGIN:VCALENDAR',
-                      'VERSION:2.0',
-                      'PRODID:-//CampusOne//Dashboard//EN',
-                      'BEGIN:VEVENT',
-                      `DTSTART:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
-                      `DTEND:${new Date(new Date().getTime() + 60 * 60 * 1000).toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
-                      `SUMMARY:${aiTip.title}`,
-                      `DESCRIPTION:${aiTip.desc}`,
-                      'END:VEVENT',
-                      'END:VCALENDAR'
-                    ].join('\n');
-                    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', 'campusone-event.ics');
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
+                    // Add event to calendar context using current day
+                    if (typeof addCalendarEvent === 'function') {
+                      addCalendarEvent(new Date().getDate());
+                    }
                     setShowAITip(false); 
+                    // Optional: show a small toast or visual feedback
+                    alert("Added to calendar!");
                   }}>Add to Calendar</Button>
                   <Button variant="outline" size="small" onClick={() => setShowAITip(false)}>Dismiss</Button>
                 </div>

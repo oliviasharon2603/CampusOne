@@ -3,7 +3,7 @@ import { Search, Users, Calendar, MapPin, CheckCircle2, X, Star, ExternalLink, A
 import Button from '../components/ui/Button';
 import { useUserActivity } from '../context/UserActivityContext';
 
-const CATEGORIES = ["All", "Technical", "Cultural", "Sports", "Social"];
+const CATEGORIES = ["All", "Technical", "Cultural", "Sports", "Social", "Departmental"];
 
 const ClubsPage = () => {
   const [clubsData, setClubsData] = useState([]);
@@ -16,7 +16,7 @@ const ClubsPage = () => {
   const [toast, setToast] = useState(null);
   const [joinReason, setJoinReason] = useState('');
 
-  const { dbUserId, userName, userEmail } = useUserActivity();
+  const { dbUserId, userName, userEmail, joinClub } = useUserActivity();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -35,7 +35,7 @@ const ClubsPage = () => {
             theme: "bg-primary-50 text-primary-600",
             members: club.members || 0, // Backend sends it as 'members'
             coreTeam: club.incharge_name ? [{ name: club.incharge_name, role: 'In-charge', contact: club.contact_details, image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100' }] : [],
-            upcomingEvents: []
+            upcomingEvents: club.upcoming_event ? [{ name: club.upcoming_event, date: 'To Be Announced', location: 'Campus' }] : []
           })));
         }
       } catch (err) {
@@ -72,12 +72,14 @@ const ClubsPage = () => {
         body: JSON.stringify({ 
           student_name: userName || 'Student', 
           email: userEmail || 'student@campusone.edu', 
-          reason: joinReason 
+          reason: joinReason,
+          userId: dbUserId
         })
       });
       const data = await res.json();
       if (data.success) {
         setClubsData(prev => prev.map(c => c.id === activeJoinClub.id ? { ...c, isMember: true, members: (c.members || 0) + 1 } : c));
+        joinClub(activeJoinClub.id);
         setToast(`You have successfully registered for ${activeJoinClub.name}! The coordinator will reach out shortly.`);
       } else {
         setToast(data.message || 'Failed to join club.');
@@ -247,7 +249,6 @@ const ClubsPage = () => {
                   <Star className="w-5 h-5 mr-2 text-primary-500" /> About Us
                 </h3>
                 <p className="text-gray-600 leading-relaxed text-lg">{selectedClub.description}</p>
-                <p className="text-gray-500 italic mt-3 font-medium">"{selectedClub.tagline}"</p>
               </section>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

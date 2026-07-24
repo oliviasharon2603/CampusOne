@@ -17,6 +17,7 @@ const LibraryPage = () => {
   const [wishlistIds, setWishlistIds] = useState([]);
   const [isAISearching, setIsAISearching] = useState(false);
   const [toast, setToast] = useState(null);
+  const [activeFilter, setActiveFilter] = useState('All');
   
   const { borrowBook, dbUserId, userName } = useUserActivity();
 
@@ -31,32 +32,42 @@ const LibraryPage = () => {
   }, [dbUserId]);
 
   // Fetch books from real backend
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/v1/library/books');
-        const data = await res.json();
-        if (data.success) {
-          setBooks(data.data.map(b => ({
-            id: b.id,
-            title: b.title,
-            author: b.author,
-            dept: b.category || 'General',
-            available: b.available > 0,
-            availabilityText: `${b.available} / ${b.total} Copies Available`,
-            cover: 'bg-primary-100 text-primary-600',
-            image: b.cover,
-            rack: b.rack
-          })));
-        }
-      } catch (error) {
-        console.error('Failed to fetch books', error);
-      } finally {
-        setIsLoading(false);
+  const fetchBooks = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('http://localhost:5000/api/v1/library/books');
+      const data = await res.json();
+      if (data.success) {
+        setBooks(data.data.map(b => ({
+          id: b.id,
+          title: b.title,
+          author: b.author,
+          dept: b.category || 'General',
+          available: b.available > 0,
+          availabilityText: `${b.available} / ${b.total} Copies Available`,
+          cover: 'bg-primary-100 text-primary-600',
+          image: b.cover,
+          rack: b.rack,
+          available_copies: b.available
+        })));
       }
-    };
+    } catch (error) {
+      console.error('Failed to fetch books', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchBooks();
   }, []);
+
+  // Restore all books if search is cleared
+  useEffect(() => {
+    if (search === '') {
+      fetchBooks();
+    }
+  }, [search]);
 
   const [borrowHistory, setBorrowHistory] = useState([]);
   const [bookRequests, setBookRequests] = useState([]);
@@ -72,12 +83,21 @@ const LibraryPage = () => {
       .then(data => { if (data.success) setBookRequests(data.data); });
   }, [dbUserId]);
 
-  // Filter books based on search input
-  const filteredBooks = books.filter(book => 
-    book.title.toLowerCase().includes(search.toLowerCase()) || 
-    book.author.toLowerCase().includes(search.toLowerCase()) ||
-    book.dept.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filter books based on search input and active filter
+  const filteredBooks = books.filter(book => {
+    const matchesSearch = book.title.toLowerCase().includes(search.toLowerCase()) || 
+                          book.author.toLowerCase().includes(search.toLowerCase()) ||
+                          book.dept.toLowerCase().includes(search.toLowerCase());
+    
+    if (!matchesSearch) return false;
+
+    if (activeFilter === 'Available') return book.available;
+    if (activeFilter === 'Unavailable') return !book.available;
+    if (activeFilter === 'CS') return book.dept === 'Computer Science';
+    if (activeFilter === 'AI&DS') return book.dept === 'AI&DS';
+    
+    return true; // 'All'
+  });
 
   const handleBorrowClick = () => {
     if (!dbUserId) {
@@ -114,6 +134,28 @@ const LibraryPage = () => {
       setToast('Failed to update wishlist.');
     }
     setTimeout(() => setToast(null), 4000);
+  };
+
+  const handleRemoveHistory = async (id) => {
+    try {
+      await fetch(`http://localhost:5000/api/v1/library/borrow-history/${id}`, { method: 'DELETE' });
+      setBorrowHistory(prev => prev.filter(item => item.id !== id));
+      setToast('Removed from borrow history.');
+      setTimeout(() => setToast(null), 4000);
+    } catch (err) {
+      setToast('Failed to remove item.');
+    }
+  };
+
+  const handleRemoveRequest = async (id) => {
+    try {
+      await fetch(`http://localhost:5000/api/v1/library/requests/${id}`, { method: 'DELETE' });
+      setBookRequests(prev => prev.filter(item => item.id !== id));
+      setToast('Book request cancelled.');
+      setTimeout(() => setToast(null), 4000);
+    } catch (err) {
+      setToast('Failed to cancel request.');
+    }
   };
 
   const handleAISearch = async () => {
@@ -175,6 +217,16 @@ const LibraryPage = () => {
           setSelectedBook(prev => ({ ...prev, available_copies: updatedAvailable, available: stillAvailable }));
           
           borrowBook(selectedBook.id);
+          
+          // Immediately update borrow history
+          setBorrowHistory(prev => [{
+            id: Date.now(), // temporary ID until refetch
+            book_title: selectedBook.title,
+            book_cover: selectedBook.image,
+            status: 'borrowed',
+            borrowed_at: new Date().toISOString()
+          }, ...prev]);
+
           setToast(`You have successfully borrowed ${selectedBook.title}. Please pick it up from rack ${selectedBook.rack}.`);
         } else {
           setToast(result.message || 'Failed to borrow book.');
@@ -183,7 +235,31 @@ const LibraryPage = () => {
         setToast('Network error while requesting the book.');
       }
     } else {
-      setToast('Your request has been submitted successfully. The requested book is expected within 6 working days.');
+      try {
+        const response = await fetch('http://localhost:5000/api/v1/library/book-request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ bookId: selectedBook.id, userId: dbUserId })
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+          // Immediately update requests list
+          setBookRequests(prev => [{
+            id: Date.now(),
+            book_title: selectedBook.title,
+            book_cover: selectedBook.image,
+            status: 'pending',
+            requested_at: new Date().toISOString()
+          }, ...prev]);
+          
+          setToast('Your request has been submitted successfully. The requested book is expected within 6 working days.');
+        } else {
+          setToast('Failed to request book.');
+        }
+      } catch (error) {
+        setToast('Network error while submitting request.');
+      }
     }
     
     setShowConfirmModal(false);
@@ -230,9 +306,17 @@ const LibraryPage = () => {
           <Button variant="outline" className="whitespace-nowrap" onClick={() => setShowWishlist(true)}>
             <Star className="w-4 h-4 mr-1 inline-block" /> Wishlist ({wishlistIds.length})
           </Button>
-          <Button variant="outline" icon={Filter} className="whitespace-nowrap">
-            Filters
-          </Button>
+          <select 
+            value={activeFilter}
+            onChange={(e) => setActiveFilter(e.target.value)}
+            className="px-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm font-medium text-gray-700"
+          >
+            <option value="All">All Books</option>
+            <option value="Available">Available Now</option>
+            <option value="Unavailable">Requested/Unavailable</option>
+            <option value="CS">Computer Science</option>
+            <option value="AI&DS">AI & Data Science</option>
+          </select>
           <Button variant="primary" className="whitespace-nowrap" onClick={handleAISearch} disabled={isAISearching}>
             {isAISearching ? 'Searching...' : 'AI Search'}
           </Button>
@@ -341,9 +425,14 @@ const LibraryPage = () => {
                       <p className="text-xs text-gray-500">Borrowed: {new Date(history.borrowed_at).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <span className={`text-xs font-semibold px-2 py-1 rounded-full ${history.status === 'returned' ? 'bg-success-50 text-success-700' : 'bg-warning-50 text-warning-700'}`}>
-                    {history.status.charAt(0).toUpperCase() + history.status.slice(1)}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${history.status === 'returned' ? 'bg-success-50 text-success-700' : 'bg-warning-50 text-warning-700'}`}>
+                      {history.status.charAt(0).toUpperCase() + history.status.slice(1)}
+                    </span>
+                    <button onClick={() => handleRemoveHistory(history.id)} className="text-gray-400 hover:text-danger-500 transition-colors" title="Remove">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))
             )}
@@ -371,13 +460,18 @@ const LibraryPage = () => {
                       <p className="text-xs text-gray-500">Requested: {new Date(req.requested_at).toLocaleDateString()}</p>
                     </div>
                   </div>
-                  <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                    req.status === 'pending' ? 'bg-warning-50 text-warning-700' :
-                    req.status === 'available' ? 'bg-success-50 text-success-700' :
-                    'bg-gray-100 text-gray-700'
-                  }`}>
-                    {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                      req.status === 'pending' ? 'bg-warning-50 text-warning-700' :
+                      req.status === 'available' ? 'bg-success-50 text-success-700' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
+                    </span>
+                    <button onClick={() => handleRemoveRequest(req.id)} className="text-gray-400 hover:text-danger-500 transition-colors" title="Cancel Request">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               ))
             )}
@@ -435,8 +529,21 @@ const LibraryPage = () => {
                 </div>
               </div>
               <div className="p-6 border-t border-gray-100 bg-gray-50 flex gap-3">
-                <Button className="flex-1" variant={selectedBook.available ? "primary" : "outline"} onClick={handleBorrowClick}>
-                  {selectedBook.available ? 'Borrow Book' : 'Request Book'}
+                <Button 
+                  className="flex-1" 
+                  variant={selectedBook.available ? "primary" : "outline"} 
+                  onClick={handleBorrowClick}
+                  disabled={
+                    borrowHistory.some(h => h.book_title === selectedBook.title && h.status === 'borrowed') ||
+                    bookRequests.some(r => r.book_title === selectedBook.title && r.status === 'pending')
+                  }
+                >
+                  {borrowHistory.some(h => h.book_title === selectedBook.title && h.status === 'borrowed') 
+                    ? 'Borrowed' 
+                    : bookRequests.some(r => r.book_title === selectedBook.title && r.status === 'pending') 
+                      ? 'Requested'
+                      : selectedBook.available ? 'Borrow Book' : 'Request Book'
+                  }
                 </Button>
                 <Button className="flex-1" variant={wishlistIds.includes(selectedBook.id) ? "primary" : "outline"} onClick={handleWishlistClick}>
                   {wishlistIds.includes(selectedBook.id) ? 'In Wishlist' : 'Save to Wishlist'}
@@ -493,15 +600,35 @@ const LibraryPage = () => {
                   <p className="text-gray-500 text-center mt-10">Your wishlist is empty.</p>
                 ) : (
                   books.filter(b => wishlistIds.includes(b.id)).map(book => (
-                    <div key={book.id} className="flex gap-4 p-3 border border-gray-100 rounded-lg hover:shadow-sm cursor-pointer" onClick={() => { setSelectedBook(book); setShowWishlist(false); }}>
-                      <div className="w-16 h-20 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
-                        {book.image ? <img src={book.image} className="w-full h-full object-cover" /> : <Book className="w-6 h-6 text-gray-400" />}
+                    <div key={book.id} className="flex gap-4 p-3 border border-gray-100 rounded-lg hover:shadow-sm cursor-pointer justify-between">
+                      <div className="flex gap-4 flex-1" onClick={() => { setSelectedBook(book); setShowWishlist(false); }}>
+                        <div className="w-16 h-20 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
+                          {book.image ? <img src={book.image} className="w-full h-full object-cover" /> : <Book className="w-6 h-6 text-gray-400" />}
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-gray-900 line-clamp-1">{book.title}</h4>
+                          <p className="text-sm text-gray-500">{book.author}</p>
+                          <p className="text-xs text-primary-600 mt-2 font-mono">Rack: {book.rack}</p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-bold text-gray-900 line-clamp-1">{book.title}</h4>
-                        <p className="text-sm text-gray-500">{book.author}</p>
-                        <p className="text-xs text-primary-600 mt-2 font-mono">Rack: {book.rack}</p>
-                      </div>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          fetch('http://localhost:5000/api/v1/library/wishlist', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ bookId: book.id, userId: dbUserId })
+                          }).then(res => res.json()).then(result => {
+                            if (result.success && result.action === 'removed') {
+                              setWishlistIds(prev => prev.filter(id => id !== book.id));
+                            }
+                          });
+                        }} 
+                        className="text-gray-400 hover:text-danger-500 transition-colors p-2" 
+                        title="Remove from Wishlist"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
                   ))
                 )}

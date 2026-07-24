@@ -4,14 +4,18 @@ import Button from '../components/ui/Button';
 import { useUserActivity } from '../context/UserActivityContext';
 
 // Mock Data
+const targetDate = new Date(Date.now() + 1000 * 60 * 60 * 24 * 10); // 10 days from now
+const endDate = new Date(targetDate.getTime() + 1000 * 60 * 60 * 24 * 2);
+const dateStr = `${targetDate.toLocaleString('en-US', {month: 'short', day: 'numeric'})} - ${endDate.toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}`;
+
 const HERO_EVENT = {
   id: 101,
   title: "TechNova 2026: Annual Tech Fest",
-  date: "Oct 15 - 17, 2026",
+  date: dateStr,
   venue: "Main Auditorium",
   description: "Join the biggest technology festival of the year. Featuring 24-hour hackathons, robotics competitions, and keynote speakers from top tech giants.",
   category: "Technical",
-  targetDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3 + 1000 * 60 * 60 * 5) // 3 days, 5 hours from now
+  targetDate: targetDate
 };
 
 const CATEGORIES = ["All", "Technical", "Cultural", "Sports", "Academic", "Hackathons", "Placement"];
@@ -37,7 +41,8 @@ const EventsPage = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/v1/events');
+        const url = dbUserId ? `http://localhost:5000/api/v1/events?userId=${dbUserId}` : 'http://localhost:5000/api/v1/events';
+        const response = await fetch(url);
         const result = await response.json();
         if (result.success) {
           setEvents(result.data);
@@ -49,7 +54,7 @@ const EventsPage = () => {
       }
     };
     fetchEvents();
-  }, []);
+  }, [dbUserId]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -85,26 +90,6 @@ const EventsPage = () => {
     setShowConfirmModal(true);
   };
 
-  const handleHeroRegister = async () => {
-    if (!dbUserId) {
-      showToast('Please log in first to register.');
-      return;
-    }
-    try {
-      const response = await fetch('http://localhost:5000/api/v1/events/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ eventId: HERO_EVENT.id, userId: dbUserId, name: userName })
-      });
-      if (response.ok) {
-        setHeroRegistered(true);
-        registerEvent(HERO_EVENT.id);
-        showToast(`You have successfully registered for ${HERO_EVENT.title}!`);
-      }
-    } catch(err) {
-       showToast(`Failed to register.`);
-    }
-  };
 
   const confirmRegistration = async (e) => {
     e.preventDefault();
@@ -208,7 +193,7 @@ const EventsPage = () => {
               size="large" 
               className="bg-accent-500 text-white hover:bg-accent-600 border-none shadow-lg shadow-accent-500/30"
               disabled={heroRegistered}
-              onClick={handleHeroRegister}
+              onClick={() => handleRegisterClick(HERO_EVENT)}
             >
               {heroRegistered ? 'Ticket Secured' : 'Register Now'}
             </Button>
@@ -328,14 +313,16 @@ const EventsPage = () => {
                     <MapPin className="w-4 h-4 mr-2 text-gray-400" />
                     {event.venue}
                   </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Users className="w-4 h-4 mr-2 text-gray-400" />
-                    {event.seats > 0 ? (
-                      <span><strong className="text-gray-900">{event.seats}</strong> seats remaining</span>
-                    ) : (
-                      <span className="text-danger-500 font-medium">House Full</span>
-                    )}
-                  </div>
+                  {event.type !== 'completed' && (
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Users className="w-4 h-4 mr-2 text-gray-400" />
+                      {event.seats > 0 ? (
+                        <span><strong className="text-gray-900">{event.seats}</strong> seats remaining</span>
+                      ) : (
+                        <span className="text-danger-500 font-medium">House Full</span>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-auto pt-4 border-t border-gray-100 flex gap-3">

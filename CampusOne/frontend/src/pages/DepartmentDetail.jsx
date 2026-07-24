@@ -44,7 +44,7 @@ const DepartmentDetail = () => {
           id: f.id,
           name: f.name,
           role: f.designation || 'Professor',
-          specialization: f.designation || 'General',
+          specialization: f.subject || f.designation || 'General',
           email: `${f.name.toLowerCase().replace(/[^a-z]/g, '')}@campusone.edu`,
           phone: '+91 98765 43210',
           image: f.photo_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200&h=200'

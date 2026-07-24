@@ -13,7 +13,7 @@ const TopNav = ({ toggleMobileMenu }) => {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const navigate = useNavigate();
   const searchRef = useRef(null);
-  const { registeredEvents, joinedClubs } = useUserActivity();
+  const { registeredEvents, joinedClubs, calendarEvents = [] } = useUserActivity();
 
   // Calendar Logic
   const today = new Date();
@@ -27,6 +27,7 @@ const TopNav = ({ toggleMobileMenu }) => {
   // Mock highlights based on context data
   const eventDays = registeredEvents.length > 0 ? [15, 22] : [];
   const clubDays = joinedClubs.length > 0 ? [10, 28] : [];
+  const aiEventDays = calendarEvents; // Dates added from AI Insights
   const missedAttendance = [5, 12]; // Simulated missed attendance days
 
   useEffect(() => {
@@ -225,9 +226,11 @@ const TopNav = ({ toggleMobileMenu }) => {
                   const isClub = clubDays.includes(day);
                   const isMissed = missedAttendance.includes(day);
                   const isToday = day === today.getDate();
+                  const isAiEvent = aiEventDays.includes(day);
                   
                   let bgClass = "bg-white hover:bg-gray-50 text-gray-700";
-                  if (isToday) bgClass = "bg-primary-50 text-primary-700 font-bold border border-primary-200";
+                  if (isAiEvent) bgClass = "bg-indigo-100 text-indigo-700 font-bold border border-indigo-300";
+                  else if (isToday) bgClass = "bg-primary-50 text-primary-700 font-bold border border-primary-200";
                   else if (isMissed) bgClass = "bg-danger-50 text-danger-700 font-bold border border-danger-200";
                   else if (isEvent) bgClass = "bg-secondary-50 text-secondary-700 font-bold border border-secondary-200";
                   else if (isClub) bgClass = "bg-warning-50 text-warning-700 font-bold border border-warning-200";
@@ -254,8 +257,17 @@ const TopNav = ({ toggleMobileMenu }) => {
                     <div className="flex items-start gap-3">
                       <div className="w-3 h-3 rounded-full bg-secondary-500 mt-1"></div>
                       <div>
-                        <p className="text-sm font-bold text-gray-900">Registered Events</p>
-                        <p className="text-xs text-gray-500 mt-0.5">TechNova Hackathon & Workshops on {eventDays.join('th, ')}th.</p>
+                        <p className="text-sm font-bold text-gray-900">Upcoming Event</p>
+                        <p className="text-xs text-gray-500 mt-0.5">Hackathon registration due</p>
+                      </div>
+                    </div>
+                  )}
+                  {aiEventDays.length > 0 && (
+                    <div className="flex items-start gap-3">
+                      <div className="w-3 h-3 rounded-full bg-indigo-500 mt-1"></div>
+                      <div>
+                        <p className="text-sm font-bold text-gray-900">AI Insight</p>
+                        <p className="text-xs text-gray-500 mt-0.5">Added from dashboard recommendation</p>
                       </div>
                     </div>
                   )}

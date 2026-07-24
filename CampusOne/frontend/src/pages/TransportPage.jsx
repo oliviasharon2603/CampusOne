@@ -61,6 +61,10 @@ const TransportPage = () => {
   const handleApplyPass = (e) => {
     e.preventDefault();
     const route = routesData.find(r => r.id === passForm.routeId);
+    if (!route) {
+      showToast("Please select a route.");
+      return;
+    }
     
     // Create pass payload
     const newPass = {
@@ -73,7 +77,6 @@ const TransportPage = () => {
     };
     
     applyForPass(newPass);
-    setIsApplying(false);
     showToast(`Successfully generated ${passForm.term} pass for ${route.name} route.`);
   };
 
@@ -217,8 +220,12 @@ const TransportPage = () => {
                         </div>
                         <h2 className="text-3xl font-extrabold">{transportPass.term} Pass</h2>
                       </div>
-                      <div className="bg-white p-2 rounded-xl shadow-inner">
-                        <QrCode className="w-16 h-16 text-gray-900" />
+                      <div className="bg-white p-2 rounded-xl shadow-inner flex-shrink-0">
+                        <img 
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${transportPass.id}`} 
+                          alt="Pass QR Code" 
+                          className="w-20 h-20 sm:w-24 sm:h-24 object-contain" 
+                        />
                       </div>
                     </div>
                     
@@ -269,7 +276,7 @@ const TransportPage = () => {
                     <select 
                       className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-900 focus:ring-2 focus:ring-primary-500 focus:outline-none transition-shadow"
                       value={passForm.routeId}
-                      onChange={(e) => setPassForm({...passForm, routeId: e.target.value})}
+                      onChange={(e) => setPassForm({...passForm, routeId: Number(e.target.value)})}
                     >
                       {routesData.map(route => (
                         <option key={route.id} value={route.id}>{route.name} Route (via {route.stops[1].name})</option>
@@ -325,7 +332,7 @@ const TransportPage = () => {
                   <select 
                     className="w-full bg-white border border-gray-200 rounded-lg p-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-primary-500 focus:outline-none"
                     value={trackingRoute.id}
-                    onChange={(e) => setTrackingRoute(routesData.find(r => r.id === e.target.value))}
+                    onChange={(e) => setTrackingRoute(routesData.find(r => r.id === Number(e.target.value)))}
                   >
                     {routesData.map(route => (
                       <option key={route.id} value={route.id}>{route.name}</option>
@@ -370,7 +377,7 @@ const TransportPage = () => {
               {/* Accurate Map iframe */}
               <div className="flex-1 relative bg-gray-200 hidden sm:block overflow-hidden">
                 <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.689689582531!2d78.68307281480068!3d10.758410292333465!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baaf5c120a1c6bb%3A0xc6a82704e6c1df24!2sPanjappur%2C%20Tiruchirappalli%2C%20Tamil%20Nadu!5e0!3m2!1sen!2sin!4v1715000000000!5m2!1sen!2sin"
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(trackingRoute.stops[0].name + " to CampusOne Tiruchirappalli")}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
                   width="100%" 
                   height="100%" 
                   style={{ border: 0 }} 
@@ -383,9 +390,9 @@ const TransportPage = () => {
                 {/* SVG Route Overlay */}
                 <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
                   <path 
-                    d={trackingRoute.id === 'route-1' ? "M 30 30 Q 40 50 70 80" :
-                       trackingRoute.id === 'route-2' ? "M 70 30 Q 60 60 70 80" :
-                       trackingRoute.id === 'route-3' ? "M 50 30 Q 55 50 70 80" :
+                    d={trackingRoute.id === 1 ? "M 30 30 Q 40 50 70 80" :
+                       trackingRoute.id === 2 ? "M 70 30 Q 60 60 70 80" :
+                       trackingRoute.id === 3 ? "M 50 30 Q 55 50 70 80" :
                        "M 30 60 Q 50 70 70 80"} 
                     fill="none" 
                     stroke="#3b82f6" 
@@ -394,8 +401,8 @@ const TransportPage = () => {
                     className="opacity-90 drop-shadow-md"
                   />
                   {/* Start Point */}
-                  <circle cx={trackingRoute.id === 'route-1' ? 30 : trackingRoute.id === 'route-2' ? 70 : trackingRoute.id === 'route-3' ? 50 : 30} 
-                          cy={trackingRoute.id === 'route-1' ? 30 : trackingRoute.id === 'route-2' ? 30 : trackingRoute.id === 'route-3' ? 30 : 60} 
+                  <circle cx={trackingRoute.id === 1 ? 30 : trackingRoute.id === 2 ? 70 : trackingRoute.id === 3 ? 50 : 30} 
+                          cy={trackingRoute.id === 1 ? 30 : trackingRoute.id === 2 ? 30 : trackingRoute.id === 3 ? 30 : 60} 
                           r="1.5" fill="#ef4444" className="drop-shadow-sm" />
                   {/* End Point (Campus) */}
                   <circle cx="70" cy="80" r="2" fill="#22c55e" className="drop-shadow-sm" />
@@ -403,8 +410,8 @@ const TransportPage = () => {
 
                 {/* Mock GPS Marker Overlay on the path */}
                 <div className="absolute pointer-events-none transition-all duration-1000" style={{
-                  left: trackingRoute.id === 'route-1' ? '45%' : trackingRoute.id === 'route-2' ? '65%' : trackingRoute.id === 'route-3' ? '55%' : '45%',
-                  top: trackingRoute.id === 'route-1' ? '45%' : trackingRoute.id === 'route-2' ? '55%' : trackingRoute.id === 'route-3' ? '45%' : '65%',
+                  left: trackingRoute.id === 1 ? '45%' : trackingRoute.id === 2 ? '65%' : trackingRoute.id === 3 ? '55%' : '45%',
+                  top: trackingRoute.id === 1 ? '45%' : trackingRoute.id === 2 ? '55%' : trackingRoute.id === 3 ? '45%' : '65%',
                   transform: 'translate(-50%, -50%)'
                 }}>
                   <div className="flex flex-col items-center">

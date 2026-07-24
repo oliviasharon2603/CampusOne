@@ -9,9 +9,14 @@ export const UserActivityProvider = ({ children }) => {
   const [registeredEvents, setRegisteredEvents] = useState([]);
   const [joinedClubs, setJoinedClubs] = useState([]);
   const [transportPass, setTransportPass] = useState(null);
+  const [calendarEvents, setCalendarEvents] = useState([]);
   const [dbUserId, setDbUserId] = useState(null);
   const [userName, setUserName] = useState(null);
   const [userEmail, setUserEmail] = useState(null);
+
+  const addCalendarEvent = (eventDate) => {
+    setCalendarEvents(prev => prev.includes(eventDate) ? prev : [...prev, eventDate]);
+  };
 
   useEffect(() => {
     import('../firebase').then(({ auth }) => {
@@ -34,6 +39,15 @@ export const UserActivityProvider = ({ children }) => {
                 setDbUserId(data.userId);
                 setUserName(user.displayName || 'Student');
                 setUserEmail(user.email || '');
+                
+                // Fetch user stats
+                const statsRes = await fetch(`http://localhost:5000/api/v1/users/${data.userId}/stats`);
+                const statsData = await statsRes.json();
+                if (statsData.success) {
+                  setRegisteredEvents(statsData.data.registeredEvents);
+                  setBorrowedBooks(statsData.data.borrowedBooks);
+                  setJoinedClubs(statsData.data.joinedClubs);
+                }
               }
             } catch (err) {
               console.error('Error syncing user:', err);
@@ -76,6 +90,7 @@ export const UserActivityProvider = ({ children }) => {
       registeredEvents, registerEvent,
       joinedClubs, joinClub,
       transportPass, applyForPass,
+      calendarEvents, addCalendarEvent,
       dbUserId, userName, userEmail
     }}>
       {children}
